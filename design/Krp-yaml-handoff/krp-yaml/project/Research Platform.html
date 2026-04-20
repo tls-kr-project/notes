@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SinoResearch</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12111a;--bg-act:#0d0c14;--bg-pan:#191727;--bg-ed:#141320;--bg-tab:#1d1b2e;
+  --bdr:#252338;--bdr-l:#1e1c30;
+  --t1:#dcd8f0;--t2:#7a778f;--t3:#4a4762;
+  --amb:oklch(0.72 0.14 65);--amb-d:oklch(0.72 0.14 65/.12);--amb-b:oklch(0.72 0.14 65/.28);
+  --blu:oklch(0.65 0.10 255);--grn:oklch(0.65 0.10 160);--hov:rgba(255,255,255,0.045);
+  --ff:'IBM Plex Sans',sans-serif;--fm:'IBM Plex Mono',monospace;--fc:'Noto Serif SC','Songti SC','SimSun',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff);background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;font-size:13px;line-height:1.4}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--t3)}
+#app{display:flex;flex-direction:column;height:100vh;user-select:none}.main{flex:1;display:flex;overflow:hidden}
+/* MENUBAR */
+.mb{height:36px;background:#09080f;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:4px;padding:0 10px;flex-shrink:0;z-index:100}
+.mb-logo{display:flex;align-items:center;gap:8px;padding:0 6px;margin-right:4px}
+.mb-logo-cjk{font-family:var(--fc);font-size:19px;color:var(--amb);line-height:1}
+.mb-logo-txt{font-size:13px;font-weight:600;letter-spacing:-.015em}
+.mb-sep{width:1px;height:18px;background:var(--bdr);margin:0 4px}
+.mb-btn{padding:3px 9px;border-radius:4px;border:none;background:transparent;color:var(--t2);cursor:pointer;font:inherit;font-size:13px;transition:.1s}
+.mb-btn:hover{background:var(--hov);color:var(--t1)}
+.mb-search{display:flex;align-items:center;gap:6px;background:var(--bg-pan);border:1px solid var(--bdr);border-radius:6px;padding:4px 10px;width:260px;color:var(--t2);margin:0 auto}
+.mb-search input{flex:1;background:transparent;border:none;outline:none;color:var(--t1);font:inherit;font-size:12px}
+.mb-search input::placeholder,.mb-search kbd{color:var(--t3)}
+.mb-search kbd{font-size:10px;padding:1px 4px;border:1px solid var(--bdr);border-radius:3px;font-family:var(--fm)}
+.mb-login{padding:4px 13px;border-radius:5px;border:1px solid var(--amb);background:transparent;color:var(--amb);cursor:pointer;font:inherit;font-size:12px;font-weight:500;transition:.15s}
+.mb-login:hover{background:var(--amb);color:#09080f}
+/* ACTIVITY BAR */
+.act{width:48px;background:var(--bg-act);border-right:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;flex-shrink:0}
+.act-btn{width:40px;height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:7px;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:.15s;position:relative}
+.act-btn:hover{background:var(--hov);color:var(--t2)}.act-btn.on{color:var(--amb);background:var(--amb-d)}
+.act-btn.on::before{content:'';position:absolute;left:0;top:20%;height:60%;width:2px;background:var(--amb);border-radius:0 2px 2px 0}
+.act-lbl{font-size:8.5px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}.act-gap{flex:1}
+/* PANELS */
+.lp,.rp{display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.lp{background:var(--bg-pan);border-right:1px solid var(--bdr)}.rp{background:var(--bg-pan);border-left:1px solid var(--bdr)}
+.ph{height:28px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--bdr);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);flex-shrink:0}
+.ph-btn{background:transparent;border:none;cursor:pointer;color:var(--t3);display:flex;padding:2px;border-radius:3px;transition:.1s}
+.ph-btn:hover{color:var(--t1);background:var(--hov)}
+/* SUBPANELS */
+.sp-h{height:24px;display:flex;align-items:center;gap:5px;padding:0 10px;cursor:pointer;border-bottom:1px solid var(--bdr-l);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);flex-shrink:0;transition:.1s}
+.sp-h:hover{color:var(--t2);background:var(--hov)}.sp-b{overflow-y:auto}
+.toc-item{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;border-left:2px solid transparent;transition:.1s}
+.toc-item:hover{background:var(--hov)}.toc-item.on{border-left-color:var(--amb);background:var(--amb-d)}
+.toc-cjk{font-family:var(--fc);font-size:14px}.toc-sub,.toc-n{font-size:10px;color:var(--t3)}
+.toc-n{font-family:var(--fm);margin-left:auto}
+.list-item{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;border-bottom:1px solid var(--bdr-l);transition:.1s}
+.list-item:hover{background:var(--hov)}.list-cjk{font-family:var(--fc);font-size:17px;color:var(--t1);min-width:28px}
+.list-sub,.list-score{font-size:11px;color:var(--t2)}.list-score{font-size:10px;color:var(--grn);font-family:var(--fm)}
+/* RESIZE */
+.rz{width:4px;background:transparent;cursor:col-resize;flex-shrink:0;transition:background .15s;z-index:10}
+.rz:hover,.rz.drag{background:var(--amb)}
+.srz-h{width:4px;background:transparent;cursor:col-resize;flex-shrink:0;transition:background .15s;z-index:5}
+.srz-v{height:4px;background:transparent;cursor:row-resize;flex-shrink:0;transition:background .15s;z-index:5}
+.srz-h:hover,.srz-h.drag,.srz-v:hover,.srz-v.drag{background:oklch(0.72 0.14 65/.5)}
+/* CENTRAL */
+.ca{flex:1;display:flex;overflow:hidden}
+.wp{display:flex;flex-direction:column;flex:1;overflow:hidden;min-width:180px;min-height:80px;border-right:1px solid var(--bdr)}
+.wp:last-of-type{border-right:none}
+/* TABS */
+.tab-bar{height:34px;display:flex;align-items:flex-end;background:var(--bg-tab);border-bottom:1px solid var(--bdr);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;gap:5px;padding:0 12px;height:100%;cursor:pointer;border-right:1px solid var(--bdr);color:var(--t2);font-size:12px;white-space:nowrap;background:var(--bg-tab);position:relative;transition:.1s;flex-shrink:0}
+.tab:hover{background:var(--hov)}.tab.on{background:var(--bg-ed);color:var(--t1)}
+.tab.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--bg-ed)}
+.tab-x{color:var(--t3);padding:2px;border-radius:3px;opacity:0;transition:.1s;border:none;background:transparent;cursor:pointer;display:flex;line-height:1}
+.tab:hover .tab-x,.tab.on .tab-x{opacity:1}.tab-x:hover{background:var(--hov);color:var(--t1)}
+.tab-add,.wp-act{background:transparent;border:none;cursor:pointer;color:var(--t3);display:flex;transition:.1s}
+.tab-add{width:28px;height:100%;align-items:center;justify-content:center;flex-shrink:0}
+.tab-add:hover{color:var(--t2)}.wp-act{padding:3px;border-radius:3px}
+.wp-act:hover{color:var(--t1);background:var(--hov)}.wp-acts{display:flex;gap:1px;margin-left:auto;padding:0 5px;align-items:center;flex-shrink:0}
+.wp-act-sep{width:1px;height:14px;background:var(--bdr);margin:0 2px}
+/* TEXT / EDITOR */
+.ec{flex:1;overflow-y:auto;padding:28px 36px;background:var(--bg-ed)}
+.tv-title{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--bdr)}
+.tv-title h1{font-family:var(--fc);font-size:28px;font-weight:700;letter-spacing:.04em;margin-bottom:4px}
+.tv-title h2{font-size:13px;font-weight:400;color:var(--t2);font-style:italic}
+.passage{display:grid;grid-template-columns:44px 1fr;gap:0 16px;margin-bottom:22px;align-items:start}
+.p-id{font-family:var(--fm);font-size:10px;color:var(--t3);padding-top:5px;text-align:right}
+.p-txt{font-family:var(--fc);line-height:2;letter-spacing:.04em}
+.ch{cursor:pointer;border-radius:3px;padding:0 1px;display:inline;transition:background .1s,color .1s}
+.ch:hover,.ch.on{background:var(--amb-b);color:var(--amb)}.pu{color:var(--t3)}
+/* CIB */
+.cib{border-top:1px solid var(--bdr);padding:6px 20px;display:flex;align-items:center;gap:14px;background:var(--bg-pan);min-height:38px;flex-shrink:0}
+.cib-g{font-family:var(--fc);font-size:24px;color:var(--amb);min-width:28px;line-height:1}
+.cib-py{font-size:11px;color:var(--t2);min-width:38px}
+.cib-df{font-size:12px;color:var(--t2);flex:1}.cib-pos{font-size:10px;color:var(--t3);font-style:italic}
+.cib-empty{font-size:12px;color:var(--t3)}
+/* RIGHT PANEL */
+.rt-bar{display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.rt{flex:1;height:32px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-size:11px;color:var(--t2);border:none;background:transparent;border-bottom:2px solid transparent;transition:.1s;font-family:var(--ff)}
+.rt:hover{color:var(--t1)}.rt.on{color:var(--amb);border-bottom-color:var(--amb)}
+.rc{flex:1;overflow-y:auto;padding:10px}
+.ann{border-left:2px solid var(--blu);padding:8px 10px;margin-bottom:10px;background:rgba(100,120,220,.05);border-radius:0 4px 4px 0}
+.ann-ch{font-family:var(--fc);font-size:22px;color:var(--t1);margin-bottom:2px}.ann-who{font-size:10px;color:var(--t3)}
+.ann-txt{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.65}
+.cmsg{margin-bottom:8px}.cmsg.u{text-align:right}
+.cbub{display:inline-block;max-width:88%;padding:7px 10px;border-radius:10px;font-size:12px;line-height:1.6}
+.cmsg.u .cbub{background:var(--amb-d);color:var(--amb);border-radius:10px 10px 2px 10px}
+.cmsg.a .cbub{background:var(--hov);color:var(--t2);border-radius:10px 10px 10px 2px}
+.chat-in{border-top:1px solid var(--bdr);padding:8px}
+.chat-input{width:100%;background:var(--bg-ed);border:1px solid var(--bdr);border-radius:6px;padding:6px 8px;color:var(--t1);font:inherit;font-size:12px;resize:none;outline:none;margin-bottom:5px}
+.chat-input:focus{border-color:var(--amb)}
+.chat-send{float:right;padding:5px 12px;background:var(--amb-d);border:1px solid var(--amb);color:var(--amb);border-radius:6px;cursor:pointer;font:inherit;font-size:11px;font-weight:500;transition:.1s}
+.chat-send:hover{background:var(--amb);color:#09080f}
+.ai-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);padding:8px 12px 2px}
+/* STATUS BAR */
+.sb{height:24px;background:oklch(0.28 0.07 260);display:flex;align-items:center;font-family:var(--fm);font-size:11px;flex-shrink:0;overflow:hidden}
+.si{display:flex;align-items:center;gap:4px;padding:0 10px;height:100%;color:rgba(255,255,255,.65);white-space:nowrap;cursor:pointer;transition:background .1s}
+.si:hover{background:rgba(255,255,255,.1)}.si.hi{color:#fff;background:oklch(0.35 0.09 260)}
+.s-sep{width:1px;height:100%;background:rgba(255,255,255,.15);flex-shrink:0}.s-sp{flex:1}
+.sdb{padding:0 8px;height:100%;display:flex;align-items:center;font-size:10px;cursor:pointer;color:rgba(255,255,255,.65);border:none;background:transparent;font-family:var(--fm);transition:.1s;letter-spacing:.04em}
+.sdb:hover{background:rgba(255,255,255,.1);color:#fff}.sdb.on{color:#fff;background:rgba(255,255,255,.15)}
+/* TWEAKS */
+.tw-panel{position:fixed;bottom:32px;right:16px;width:240px;background:var(--bg-pan);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;z-index:1000;box-shadow:0 10px 40px rgba(0,0,0,.6);display:none}
+.tw-panel.open{display:block}
+.tw-ttl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+.tw-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.tw-lbl{font-size:12px;color:var(--t2)}
+.tog{width:32px;height:18px;background:var(--bdr);border-radius:9px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--amb)}.tog::after{content:'';position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s}
+.tog.on::after{left:17px}.tw-range{width:80px;accent-color:var(--amb)}
+
+/* ── TRANSLATION MODE ── */
+.tm{flex:1;overflow:auto}
+.tm-hdr,.tm-row{display:grid;align-items:stretch}
+.tm-hdr{background:var(--bg-tab);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:2}
+.tm-hdr-c{padding:6px 12px;border-right:1px solid var(--bdr);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+.tm-row{border-bottom:1px solid var(--bdr-l);transition:background .1s}
+.tm-row:hover{background:var(--hov)}
+.tm-pid{font-family:var(--fm);font-size:9px;color:var(--t3);padding:8px 8px;text-align:right;border-right:1px solid var(--bdr-l);padding-top:10px}
+.tm-zh{font-family:var(--fc);line-height:1.9;padding:6px 14px;border-right:1px solid var(--bdr-l);white-space:nowrap;align-self:center}
+.tm-cell{padding:4px 10px;border-right:1px solid var(--bdr-l)}
+.tm-ta{width:100%;background:transparent;border:none;outline:none;color:var(--t2);font:inherit;font-size:12px;line-height:1.7;resize:none;min-height:32px}
+.tm-ta:focus{color:var(--t1)}.tm-ta::placeholder{color:var(--t3)}
+.tm-add-h{display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);transition:.1s;padding:0 8px}
+.tm-add-h:hover{color:var(--amb)}
+
+/* ── INSPECTION MODE ── */
+.im{display:flex;flex:1;overflow:hidden}
+.im-vt-wrap{width:220px;overflow-y:auto;overflow-x:hidden;padding:16px 20px;border-right:1px solid var(--bdr);background:var(--bg-ed);flex-shrink:0}
+.im-vt{writing-mode:vertical-rl;text-orientation:mixed;font-family:var(--fc);line-height:2;letter-spacing:.06em}
+.vt-line{display:inline-block;margin:0 8px;border-right:1px solid var(--bdr-l);padding-right:8px}
+.im-fac{flex:1;display:flex;flex-direction:column;background:var(--bg-pan)}
+.im-fac-bar{height:28px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--bdr);font-size:10px;font-family:var(--fm);color:var(--t3);flex-shrink:0}
+.im-fac-body{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden}
+.im-fac-img{width:100%;height:100%;background:repeating-linear-gradient(45deg,#1d1b2e,#1d1b2e 8px,#191727 8px,#191727 16px);border:1px solid var(--bdr);border-radius:3px;position:relative;overflow:hidden}
+.im-hl{position:absolute;border:2px solid var(--amb);background:oklch(0.72 0.14 65/.18);border-radius:3px;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;box-shadow:0 0 16px oklch(0.72 0.14 65/.3)}
+.im-hl-lbl{position:absolute;top:-20px;left:0;font-family:var(--fc);font-size:14px;color:var(--amb);white-space:nowrap;text-shadow:0 1px 4px #09080f}
+
+/* ── SELECTION PANEL ── */
+.sel{padding:10px}
+.sel-txt{font-family:var(--fc);font-size:19px;letter-spacing:.04em;padding:8px 12px;background:var(--amb-d);border-radius:5px;margin-bottom:6px;line-height:1.9;word-break:break-all}
+.sel-meta{font-family:var(--fm);font-size:10px;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sel-clear{font-size:10px;color:var(--t3);background:none;border:none;cursor:pointer;padding:0;transition:.1s;margin-left:auto}
+.sel-clear:hover{color:var(--t2)}
+.sel-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin:10px 0 4px}
+.sel-entry{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--bdr-l);align-items:baseline}
+.sel-ch{font-family:var(--fc);font-size:16px;color:var(--t1);min-width:22px}
+.sel-py{font-size:10px;color:var(--amb);font-family:var(--fm);min-width:36px}
+.sel-df{font-size:11px;color:var(--t2);flex:1;line-height:1.5}
+.sel-ta{width:100%;background:var(--bg-ed);border:1px solid var(--bdr);border-radius:5px;padding:7px 9px;color:var(--t1);font:inherit;font-size:12px;resize:none;outline:none;margin:8px 0 6px}
+.sel-ta:focus{border-color:var(--amb)}
+.sel-btns{display:flex;gap:5px;margin-bottom:5px}
+.sel-btn{flex:1;padding:6px;border-radius:5px;border:1px solid var(--bdr);background:var(--bg-ed);color:var(--t2);cursor:pointer;font:inherit;font-size:11px;transition:.1s;text-align:center}
+.sel-btn:hover{border-color:var(--t2);color:var(--t1)}.sel-btn.p{background:var(--amb-d);border-color:var(--amb);color:var(--amb)}
+.sel-btn.p:hover{background:var(--amb);color:#09080f}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// ── PLAIN JS DATA (no JSX) ──────────────────────────────────
+window.CHARS={
+  '子':{py:'zǐ',def:'Master; son; you (honorific)',pos:'n.'},
+  '曰':{py:'yuē',def:'to say, to speak',pos:'v.'},
+  '學':{py:'xué',def:'to learn, to study; learning',pos:'v./n.'},
+  '而':{py:'ér',def:'and; but; then (conj.)',pos:'conj.'},
+  '時':{py:'shí',def:'time; season; timely',pos:'n./adv.'},
+  '習':{py:'xí',def:'to practice, review; habit',pos:'v./n.'},
+  '之':{py:'zhī',def:'it; this; (possessive part.)',pos:'part.'},
+  '不':{py:'bù',def:'not, no (negation)',pos:'adv.'},
+  '亦':{py:'yì',def:'also, too; likewise',pos:'adv.'},
+  '說':{py:'yuè',def:'pleased, delighted',pos:'adj.'},
+  '乎':{py:'hū',def:'(interrog./exclamatory particle)',pos:'part.'},
+  '有':{py:'yǒu',def:'to have, there is; exist',pos:'v.'},
+  '朋':{py:'péng',def:'friend, companion, associate',pos:'n.'},
+  '自':{py:'zì',def:'from; self; since',pos:'prep.'},
+  '遠':{py:'yuǎn',def:'far, distant, remote',pos:'adj.'},
+  '方':{py:'fāng',def:'direction; region; just now',pos:'n./adv.'},
+  '來':{py:'lái',def:'to come, to arrive',pos:'v.'},
+  '樂':{py:'lè',def:'happy, joyful; to enjoy',pos:'adj./v.'},
+  '人':{py:'rén',def:'person, people; human being',pos:'n.'},
+  '知':{py:'zhī',def:'to know, to understand; wisdom',pos:'v./n.'},
+  '慍':{py:'yùn',def:'to resent; to be irritated',pos:'v.'},
+  '君':{py:'jūn',def:'lord, ruler; gentleman',pos:'n.'},
+  '仁':{py:'rén',def:'benevolence, humaneness; virtue',pos:'n.'},
+  '道':{py:'dào',def:'the Way; path; to speak',pos:'n./v.'},
+  '本':{py:'běn',def:'root, origin; fundamental',pos:'n./adj.'},
+  '孝':{py:'xiào',def:'filial piety; to be filial',pos:'n./v.'},
+  '弟':{py:'dì',def:'younger brother; to serve elders',pos:'n./v.'},
+  '信':{py:'xìn',def:'trustworthiness; to trust; letter',pos:'n./v.'},
+  '巧':{py:'qiǎo',def:'skillful; clever; artful',pos:'adj.'},
+  '言':{py:'yán',def:'words, speech; to speak',pos:'n./v.'},
+  '令':{py:'lìng',def:'to command; excellent; make',pos:'v./adj.'},
+  '色':{py:'sè',def:'colour; countenance; beauty',pos:'n.'},
+  '鮮':{py:'xiǎn',def:'few, rare; seldom',pos:'adj./adv.'},
+  '省':{py:'xǐng',def:'to examine oneself; to reflect',pos:'v.'},
+  '身':{py:'shēn',def:'body; oneself; person',pos:'n.'},
+  '忠':{py:'zhōng',def:'loyalty, faithfulness; devoted',pos:'n./adj.'},
+  '為':{py:'wèi',def:'to act for; because of',pos:'prep./v.'},
+  '謀':{py:'móu',def:'to plan, to deliberate; scheme',pos:'v./n.'},
+  '交':{py:'jiāo',def:'to exchange; to associate; friendship',pos:'v./n.'},
+  '傳':{py:'chuán',def:'to transmit, to pass on; tradition',pos:'v./n.'},
+};
+window.PASSAGES=[
+  {id:'1.1',text:'子曰：「學而時習之，不亦說乎？有朋自遠方來，不亦樂乎？人不知而不慍，不亦君子乎？」'},
+  {id:'1.2',text:'有子曰：「其為人也孝弟，而好犯上者，鮮矣；不好犯上，而好作亂者，未之有也。君子務本，本立而道生。孝弟也者，其為仁之本與！」'},
+  {id:'1.3',text:'子曰：「巧言令色，鮮矣仁！」'},
+  {id:'1.4',text:'曾子曰：「吾日三省吾身：為人謀而不忠乎？與朋友交而不信乎？傳不習乎？」'},
+];
+window.TOC=[
+  {id:'xue-er',cjk:'學而',sub:'Book I',n:16,on:true},
+  {id:'wei-zheng',cjk:'為政',sub:'Book II',n:24},
+  {id:'ba-yi',cjk:'八佾',sub:'Book III',n:26},
+  {id:'li-ren',cjk:'里仁',sub:'Book IV',n:26},
+  {id:'gong-ye',cjk:'公冶長',sub:'Book V',n:28},
+  {id:'yong-ye',cjk:'雍也',sub:'Book VI',n:30},
+];
+window.RELATED=[
+  {cjk:'孟子',name:'Mengzi',score:'0.92'},{cjk:'荀子',name:'Xunzi',score:'0.85'},
+  {cjk:'大學',name:'Great Learning',score:'0.79'},{cjk:'中庸',name:'Doctrine of the Mean',score:'0.74'},
+];
+window.CATALOG=[
+  {cjk:'論語',name:'Lunyu (Analects)',period:'Han dynasty rec.'},
+  {cjk:'孟子',name:'Mengzi',period:'4th–3rd c. BCE'},
+  {cjk:'荀子',name:'Xunzi',period:'3rd c. BCE'},
+  {cjk:'大學',name:'Daxue',period:'attributed Han'},
+];
+window.CONCEPTS=[
+  {cjk:'仁',py:'rén',gloss:'Benevolence / Humaneness'},{cjk:'義',py:'yì',gloss:'Righteousness'},
+  {cjk:'禮',py:'lǐ',gloss:'Ritual Propriety'},{cjk:'道',py:'dào',gloss:'The Way'},
+  {cjk:'孝',py:'xiào',gloss:'Filial Piety'},{cjk:'信',py:'xìn',gloss:'Faithfulness'},
+];
+window.DICT_ENTRIES=[
+  {cjk:'學',py:'xué',def:'To learn; to study. Implies continuous self-cultivation and moral formation, not mere acquisition of knowledge.'},
+  {cjk:'仁',py:'rén',def:'Humaneness, benevolence. The central virtue in Confucian ethics, encompassing love for others and moral cultivation.'},
+  {cjk:'禮',py:'lǐ',def:'Ritual propriety; rites. Social and religious ceremonies that structure relationships and maintain social harmony.'},
+];
+window.ANNOTATIONS=[
+  {char:'學',who:'Zhu Xi 朱熹 (1190)',txt:'Learning is to follow and imitate. Man\'s nature is all good, but he falls short because he is confused by his psychophysical constitution.'},
+  {char:'習',who:'Arthur Waley (1938)',txt:'"Practice" — the word xí originally meant to practice bird-flying, to flap the wings repeatedly until flight is mastered.'},
+];
+window.CHAT_INIT=[
+  {role:'a',txt:'Hello! I can help you explore this text. Ask me about passages, characters, or themes.'},
+  {role:'u',txt:'What does 學而時習之 mean?'},
+  {role:'a',txt:'Literally: "To learn and in due time practice it." Zhu Xi emphasizes 習 as repeated embodied practice, not mere repetition.'},
+];
+// Phrase-break passages at punctuation (for Translation mode)
+window.TRANS_DATA=(function(){
+  return window.PASSAGES.map(p=>{
+    const phs=[];let cur='';
+    for(const ch of p.text){
+      cur+=ch;
+      if(/[，。！？；」]/.test(ch)){phs.push({id:`${p.id}.${phs.length}`,zh:cur});cur='';}
+    }
+    if(cur.trim()) phs.push({id:`${p.id}.${phs.length}`,zh:cur});
+    return{pid:p.id,phs};
+  });
+})();
+// Pre-filled translations
+window.PREFILL={
+  legge:{'1.1.0':'The Master said,','1.1.1':'"To learn and at due times to practice —','1.1.2':'is this not pleasant?','1.1.3':'To have friends come from distant quarters —','1.1.4':'is this not delightful?','1.1.5':'To be unknown, yet feel no discomposure —','1.1.6':'is this not the mark of the superior man?"','1.3.0':'The Master said,','1.3.1':'"Fine words and an insinuating appearance','1.3.2':'are seldom associated with true virtue."'},
+  waley:{'1.1.0':'The Master said,','1.1.1':'"To learn and at due intervals to review what one has learnt —','1.1.2':'is that not after all a pleasure?','1.1.3':'That friends should come to one from afar —','1.1.4':'is that not after all delightful?','1.1.5':'To remain unsoured when one\'s merits are unrecognized —','1.1.6':'is that not what is expected of a gentleman?"','1.3.0':'The Master said,','1.3.1':'"Clever talk and a pretentious manner','1.3.2':'are seldom found in the Good."'},
+};
+// Pane tree helpers
+let _uid=100;window.uid=()=>++_uid;
+window.treeUpdate=(node,id,fn)=>{if(node.id===id)return fn(node);if(node.type==='split')return{...node,children:node.children.map(c=>window.treeUpdate(c,id,fn))};return node;};
+window.splitLeaf=(tree,leafId,dir)=>window.treeUpdate(tree,leafId,node=>{if(node.type!=='leaf')return node;const tid=window.uid();const nl={id:window.uid(),type:'leaf',tabs:[{id:tid,type:'text',title:'論語 · 學而'}],activeTab:tid};return{id:window.uid(),type:'split',dir,sizes:[50,50],children:[node,nl]};});
+window.removeLeaf=(tree,lid)=>{if(tree.type==='leaf')return tree;const[a,b]=tree.children;if(a.id===lid)return b;if(b.id===lid)return a;return{...tree,children:tree.children.map(c=>window.removeLeaf(c,lid))};};
+window.countLeaves=(n)=>n.type==='leaf'?1:window.countLeaves(n.children[0])+window.countLeaves(n.children[1]);
+</script>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback}=React;
+const {CHARS,PASSAGES,TOC,RELATED,CATALOG,CONCEPTS,DICT_ENTRIES,ANNOTATIONS,CHAT_INIT,TRANS_DATA,PREFILL}=window;
+const {uid,treeUpdate,splitLeaf,removeLeaf,countLeaves}=window;
+
+/* ── ICONS ── */
+const I={
+  texts:(s=16)=><svg width={s} height={s} viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="8" height="11" rx="1" stroke="currentColor" strokeWidth="1.3"/><path d="M5 6h4M5 8.5h3M5 11h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><rect x="6" y="4" width="8" height="10" rx="1" fill="#12111a" stroke="currentColor" strokeWidth="1.3"/><path d="M9 8h2M9 10h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+  catalog:(s=16)=><svg width={s} height={s} viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="2.5" rx=".5" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="6.75" width="12" height="2.5" rx=".5" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="11" width="12" height="2.5" rx=".5" stroke="currentColor" strokeWidth="1.2"/></svg>,
+  concepts:(s=16)=><svg width={s} height={s} viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.2"/><circle cx="3" cy="4" r="1.5" stroke="currentColor" strokeWidth="1.2"/><circle cx="13" cy="4" r="1.5" stroke="currentColor" strokeWidth="1.2"/><circle cx="3" cy="12" r="1.5" stroke="currentColor" strokeWidth="1.2"/><circle cx="13" cy="12" r="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M4.5 5L6 6.5M10 6.5L11.5 5M4.5 11L6 9.5M10 9.5L11.5 11" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/></svg>,
+  dictionary:(s=16)=><svg width={s} height={s} viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="9" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M5 5.5h4M5 8h3M5 10.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><path d="M11 6l3 2-3 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  chev:(d='d',s=11)=>{const p=d==='d'?'M3 4.5l3 3 3-3':d==='r'?'M4.5 3l3 3-3 3':'M7.5 3l-3 3 3 3';return<svg width={s} height={s} viewBox="0 0 11 11" fill="none"><path d={p} stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>},
+  search:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.3"/><path d="M9 9l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+  close:(s=10)=><svg width={s} height={s} viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+  plus:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M2 6.5h9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+  branch:(s=12)=><svg width={s} height={s} viewBox="0 0 12 12" fill="none"><circle cx="3" cy="3" r="1.5" stroke="currentColor" strokeWidth="1.1"/><circle cx="9" cy="3" r="1.5" stroke="currentColor" strokeWidth="1.1"/><circle cx="3" cy="9" r="1.5" stroke="currentColor" strokeWidth="1.1"/><path d="M3 4.5V9M3 4.5C3 7 9 5 9 4.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/></svg>,
+  colL:(s=14)=><svg width={s} height={s} viewBox="0 0 14 14" fill="none"><path d="M8 3L4 7l4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><line x1="2" y1="3" x2="2" y2="11" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+  colR:(s=14)=><svg width={s} height={s} viewBox="0 0 14 14" fill="none"><path d="M6 3l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/><line x1="12" y1="3" x2="12" y2="11" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+  annot:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v7.5H7L5 11V9H1.5V1.5z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 5h5M4 7h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+  chat:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v7H8L5.5 11V8.5H1.5V1.5z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  spark:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><path d="M6.5 1l1.2 3.8H11L8.4 7l1.2 3.8L6.5 8.8 3.4 10.8 4.6 7 2 4.8h3.3L6.5 1z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/></svg>,
+  dharma:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.2"/><circle cx="6.5" cy="6.5" r="1.8" stroke="currentColor" strokeWidth="1.2"/><path d="M6.5 1.5v1.5M6.5 10v1.5M1.5 6.5H3M10 6.5h1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+  img:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="9" rx="1" stroke="currentColor" strokeWidth="1.2"/><circle cx="4" cy="5" r="1.2" stroke="currentColor" strokeWidth="1.1"/><path d="M1 9l3.5-3L7 8.5l2-2 3 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  splitR:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="4.5" height="11" rx=".8" stroke="currentColor" strokeWidth="1.2"/><rect x="7.5" y="1" width="4.5" height="11" rx=".8" stroke="currentColor" strokeWidth="1.2"/></svg>,
+  splitD:(s=13)=><svg width={s} height={s} viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="4.5" rx=".8" stroke="currentColor" strokeWidth="1.2"/><rect x="1" y="7.5" width="11" height="4.5" rx=".8" stroke="currentColor" strokeWidth="1.2"/></svg>,
+};
+
+/* ── SUBPANEL ── */
+function SubPanel({title,open,onToggle,children,flex}){
+  return <div style={flex?{flex:1,overflow:'hidden',display:'flex',flexDirection:'column'}:{}}>
+    <div className="sp-h" onClick={onToggle}>{open?I.chev('d'):I.chev('r')} {title}</div>
+    {open&&<div className="sp-b" style={flex?{flex:1}:{}}>{children}</div>}
+  </div>
+}
+
+/* ── LEFT PANEL ── */
+function LeftPanel({activity,width,onCollapse}){
+  const[sub,setSub]=useState({toc:true,rel:true,sr:false});
+  const tog=k=>setSub(s=>({...s,[k]:!s[k]}));
+  const titles={texts:'EXPLORER',catalog:'CATALOG',concepts:'CONCEPTS',dictionary:'DICTIONARY'};
+  return <div className="lp" style={{width}}>
+    <div className="ph"><span>{titles[activity]}</span>
+      <button className="ph-btn" onClick={onCollapse}>{I.colL()}</button>
+    </div>
+    <div style={{flex:1,overflowY:'auto'}}>
+      {activity==='texts'&&<>
+        <SubPanel title="TABLE OF CONTENTS" open={sub.toc} onToggle={()=>tog('toc')}>
+          {TOC.map(t=><div key={t.id} className={`toc-item${t.on?' on':''}`}>
+            <span className="toc-cjk">{t.cjk}</span>
+            <div style={{flex:1}}><div style={{fontSize:11,color:'var(--t1)'}}>{t.cjk}</div><div className="toc-sub">{t.sub}</div></div>
+            <span className="toc-n">{t.n}</span>
+          </div>)}
+        </SubPanel>
+        <SubPanel title="RELATED TEXTS" open={sub.rel} onToggle={()=>tog('rel')}>
+          {RELATED.map((r,i)=><div key={i} className="list-item">
+            <div className="list-cjk">{r.cjk}</div>
+            <div style={{flex:1}}><div className="list-sub">{r.name}</div></div>
+            <div className="list-score">{r.score}</div>
+          </div>)}
+        </SubPanel>
+        <SubPanel title="SEARCH RESULTS" open={sub.sr} onToggle={()=>tog('sr')} flex>
+          {[{t:'學而不思則罔',c:'1.15 · Lunyu'},{t:'博學篤志',c:'19.6 · Lunyu'}].map((s,i)=><div key={i} style={{padding:'7px 12px',borderBottom:'1px solid var(--bdr-l)',cursor:'pointer'}}>
+            <div style={{fontFamily:'var(--fc)',fontSize:13,color:'var(--t1)',marginBottom:2}}>{s.t}</div>
+            <div style={{fontSize:11,color:'var(--t3)'}}>{s.c}</div>
+          </div>)}
+        </SubPanel>
+      </>}
+      {activity==='catalog'&&CATALOG.map((c,i)=><div key={i} className="list-item">
+        <div className="list-cjk">{c.cjk}</div>
+        <div style={{flex:1}}><div style={{fontSize:12,color:'var(--t1)'}}>{c.name}</div><div className="list-sub">{c.period}</div></div>
+      </div>)}
+      {activity==='concepts'&&CONCEPTS.map((c,i)=><div key={i} className="list-item">
+        <div className="list-cjk">{c.cjk}</div>
+        <div style={{flex:1}}><div style={{fontSize:12}}>{c.py}</div><div className="list-sub">{c.gloss}</div></div>
+      </div>)}
+      {activity==='dictionary'&&<div style={{padding:'8px 12px'}}>
+        {DICT_ENTRIES.map((d,i)=><div key={i} style={{marginBottom:14,paddingBottom:14,borderBottom:'1px solid var(--bdr-l)'}}>
+          <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:4}}>
+            <span style={{fontFamily:'var(--fc)',fontSize:22}}>{d.cjk}</span>
+            <span style={{fontSize:12,color:'var(--amb)',fontFamily:'var(--fm)'}}>{d.py}</span>
+          </div>
+          <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.65}}>{d.def}</div>
+        </div>)}
+      </div>}
+    </div>
+  </div>
+}
+
+/* ── TEXT VIEWER (read mode) ── */
+const PUNCT=/[：「」，。！？；、]/;
+function TextViewer({activeChar,setActiveChar,hoverChar,setHoverChar,textSize,setSelection,setRightTab}){
+  const handleUp=useCallback(()=>{
+    setTimeout(()=>{
+      const sel=window.getSelection();
+      const text=(sel?.toString()||'').trim();
+      const chars=[...text].filter(c=>/[\u4e00-\u9fff]/.test(c));
+      if(chars.length>0){setSelection({text,chars});setRightTab('ann');}
+    },0);
+  },[setSelection,setRightTab]);
+  return <div className="ec" onMouseUp={handleUp}>
+    <div className="tv-title">
+      <h1>論語</h1><h2>Lunyu — Analects of Confucius · 學而篇 Book I</h2>
+    </div>
+    {PASSAGES.map(p=><div key={p.id} className="passage">
+      <div className="p-id">{p.id}</div>
+      <div className="p-txt" style={{fontSize:textSize}}>
+        {[...p.text].map((ch,i)=>{
+          if(PUNCT.test(ch)) return <span key={i} className="pu">{ch}</span>;
+          const info=CHARS[ch];
+          const isActive=activeChar?.ch===ch&&activeChar?.pid===p.id+i;
+          return <span key={i} className={`ch${isActive?' on':''}`}
+            onMouseEnter={()=>info&&setHoverChar({ch,pid:p.id+i,...info})}
+            onMouseLeave={()=>setHoverChar(null)}
+            onClick={()=>setActiveChar(info?{ch,pid:p.id+i,...info}:null)}>{ch}</span>
+        })}
+      </div>
+    </div>)}
+  </div>
+}
+
+/* ── SELECTION PANEL ── */
+function SelectionPanel({selection,setSelection}){
+  const[comment,setComment]=useState('');
+  const entries=[...new Set(selection.chars)].map(c=>({ch:c,...CHARS[c]})).filter(d=>d.py);
+  return <div className="sel">
+    <div className="sel-txt">{selection.text}</div>
+    <div className="sel-meta">
+      <span>{selection.chars.length} char{selection.chars.length!==1?'s':''}</span>
+      <span>·</span><span style={{color:'var(--t2)'}}>§ 1.1</span>
+      <button className="sel-clear" onClick={()=>setSelection(null)}>✕ clear</button>
+    </div>
+    {entries.length>0&&<><div className="sel-lbl">Dictionary</div>
+      {entries.map((d,i)=><div key={i} className="sel-entry">
+        <span className="sel-ch">{d.ch}</span><span className="sel-py">{d.py}</span><span className="sel-df">{d.def}</span>
+      </div>)}
+    </>}
+    <div className="sel-lbl">Annotation</div>
+    <textarea className="sel-ta" rows={3} value={comment} onChange={e=>setComment(e.target.value)} placeholder="Add a note, comment, or variant reading…"/>
+    <div className="sel-btns">
+      <button className="sel-btn p" onClick={()=>{setComment('');alert('Note saved (prototype)')}}>Save note</button>
+      <button className="sel-btn">Search corpus</button>
+    </div>
+    <div className="sel-btns">
+      <button className="sel-btn">Add dict. entry</button>
+      <button className="sel-btn">Find parallels</button>
+    </div>
+  </div>
+}
+
+/* ── TRANSLATION MODE ── */
+function TranslationMode({textSize}){
+  const[cols,setCols]=useState([{id:'legge',label:'Legge 1861'},{id:'waley',label:'Waley 1938'}]);
+  const[cells,setCells]=useState(()=>{
+    const c={};
+    Object.entries(PREFILL.legge).forEach(([k,v])=>{c[`legge-${k}`]=v});
+    Object.entries(PREFILL.waley).forEach(([k,v])=>{c[`waley-${k}`]=v});
+    return c;
+  });
+  const addCol=()=>{const id=`tr${Date.now()}`;setCols(cs=>[...cs,{id,label:'New Translation'}])};
+  const zhW=Math.max(140,textSize*9);
+  const grd=`40px ${zhW}px repeat(${cols.length},1fr) 36px`;
+  const set=(colId,phId,v)=>setCells(s=>({...s,[`${colId}-${phId}`]:v}));
+  return <div className="tm">
+    <div className="tm-hdr" style={{gridTemplateColumns:grd}}>
+      <div className="tm-hdr-c">§</div>
+      <div className="tm-hdr-c">原文</div>
+      {cols.map(c=><div key={c.id} className="tm-hdr-c" contentEditable suppressContentEditableWarning style={{outline:'none'}}>{c.label}</div>)}
+      <div className="tm-hdr-c tm-add-h" onClick={addCol} title="Add translation column">{I.plus()}</div>
+    </div>
+    {TRANS_DATA.flatMap(pg=>pg.phs.map(ph=>(
+      <div key={ph.id} className="tm-row" style={{gridTemplateColumns:grd}}>
+        <div className="tm-pid">{ph.id.split('.').slice(0,2).join('.')}</div>
+        <div className="tm-zh" style={{fontSize:textSize}}>{ph.zh}</div>
+        {cols.map(col=><div key={col.id} className="tm-cell">
+          <textarea className="tm-ta" value={cells[`${col.id}-${ph.id}`]||''} rows={1}
+            onChange={e=>set(col.id,ph.id,e.target.value)}
+            onInput={e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}}
+            placeholder="add translation…"/>
+        </div>)}
+        <div/>
+      </div>
+    )))}
+  </div>
+}
+
+/* ── INSPECTION MODE ── */
+function InspectionMode({activeChar,setActiveChar,textSize}){
+  const[hl,setHl]=useState(null);
+  const handleChar=(ch,info)=>{
+    setActiveChar(info?{ch,...info}:null);
+    const c=ch.codePointAt(0);
+    setHl({left:`${((c*37)%52)+4}%`,top:`${((c*53)%55)+5}%`,w:`${3+((c%5))}%`,h:`${5+((c%7))}%`,ch});
+  };
+  return <div className="im">
+    <div className="im-vt-wrap">
+      <div className="im-vt" style={{fontSize:textSize}}>
+        {PASSAGES.map(p=><span key={p.id} className="vt-line">
+          {[...p.text].map((ch,i)=>{
+            if(PUNCT.test(ch)) return <span key={i} className="pu">{ch}</span>;
+            const info=CHARS[ch];
+            return <span key={i} className={`ch${activeChar?.ch===ch?' on':''}`}
+              onClick={()=>handleChar(ch,info)}>{ch}</span>
+          })}
+        </span>)}
+      </div>
+    </div>
+    <div className="im-fac">
+      <div className="im-fac-bar">
+        {I.img(12)} <span>IIIF Viewer — 論語 · 學而篇 · Facsimile</span>
+        <span style={{marginLeft:'auto',color:'var(--grn)'}}>● Connected</span>
+        <span style={{marginLeft:8}}>× 1.0</span>
+        <span style={{marginLeft:8,cursor:'pointer'}}>⊕</span>
+        <span style={{marginLeft:4,cursor:'pointer'}}>⊖</span>
+      </div>
+      <div className="im-fac-body">
+        <div className="im-fac-img">
+          {hl&&<div className="im-hl" style={{left:hl.left,top:hl.top,width:hl.w,height:hl.h}}>
+            <span className="im-hl-lbl">{hl.ch}</span>
+          </div>}
+          <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:10,pointerEvents:'none',opacity:hl?0.2:1,transition:'opacity .4s'}}>
+            <div style={{fontFamily:'var(--fc)',fontSize:22,color:'var(--t3)'}}>論語</div>
+            <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--t3)',textAlign:'center'}}>IIIF manifest placeholder<br/>click a character in the text to highlight</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+/* ── FACSIMILE VIEWER ── */
+function FacsimileViewer(){
+  const[zoom,setZoom]=useState(100);
+  return <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:14,padding:32,background:'var(--bg-ed)'}}>
+    <div style={{maxWidth:360,aspectRatio:'3/4',width:'100%',background:'repeating-linear-gradient(45deg,#1d1b2e,#1d1b2e 10px,#191727 10px,#191727 20px)',border:'1px solid var(--bdr)',borderRadius:4,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:10,transform:`scale(${zoom/100})`,transition:'transform .2s'}}>
+      <div style={{fontFamily:'var(--fc)',fontSize:13,color:'var(--t2)'}}>論語 · 學而篇</div>
+      <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--t3)'}}>Facsimile image · drop scan here</div>
+    </div>
+    <div style={{display:'flex',gap:8,alignItems:'center'}}>
+      <button onClick={()=>setZoom(z=>Math.max(40,z-20))} style={{padding:'4px 10px',background:'var(--bg-pan)',border:'1px solid var(--bdr)',color:'var(--t2)',borderRadius:4,cursor:'pointer',fontFamily:'var(--fm)',fontSize:12}}>−</button>
+      <span style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--t2)',minWidth:44,textAlign:'center'}}>{zoom}%</span>
+      <button onClick={()=>setZoom(z=>Math.min(200,z+20))} style={{padding:'4px 10px',background:'var(--bg-pan)',border:'1px solid var(--bdr)',color:'var(--t2)',borderRadius:4,cursor:'pointer',fontFamily:'var(--fm)',fontSize:12}}>+</button>
+    </div>
+  </div>
+}
+
+/* ── WORKSPACE PANE ── */
+function WorkspacePane({pane,ops,activeChar,setActiveChar,hoverChar,setHoverChar,textSize,multiPane,mode,selection,setSelection,setRightTab}){
+  const cur=pane.tabs.find(t=>t.id===pane.activeTab);
+  const addTab=(type,title)=>{const id=uid();ops.addTab(pane.id,{id,type,title})};
+  const displayChar=hoverChar||activeChar;
+  return <div className="wp">
+    <div className="tab-bar">
+      {pane.tabs.map(t=><div key={t.id} className={`tab${pane.activeTab===t.id?' on':''}`} onClick={()=>ops.setActive(pane.id,t.id)}>
+        {t.type==='facsimile'?I.img():I.texts()}
+        <span>{t.title}</span>
+        {pane.tabs.length>1&&<button className="tab-x" onClick={e=>{e.stopPropagation();ops.closeTab(pane.id,t.id)}}>{I.close()}</button>}
+      </div>)}
+      <button className="tab-add" onClick={()=>addTab('text','論語 · 學而')} title="New tab">{I.plus()}</button>
+      <div className="wp-acts">
+        <button className="wp-act" onClick={()=>ops.split(pane.id,'h')} title="Split right">{I.splitR()}</button>
+        <button className="wp-act" onClick={()=>ops.split(pane.id,'v')} title="Split down">{I.splitD()}</button>
+        {multiPane&&<><div className="wp-act-sep"/><button className="wp-act" onClick={()=>ops.remove(pane.id)} title="Close pane">{I.close(11)}</button></>}
+      </div>
+    </div>
+    {mode==='read'&&cur?.type==='text'&&<TextViewer activeChar={activeChar} setActiveChar={setActiveChar} hoverChar={hoverChar} setHoverChar={setHoverChar} textSize={textSize} setSelection={setSelection} setRightTab={setRightTab}/>}
+    {mode==='read'&&cur?.type==='facsimile'&&<FacsimileViewer/>}
+    {mode==='trans'&&<TranslationMode textSize={textSize}/>}
+    {mode==='inspect'&&<InspectionMode activeChar={activeChar} setActiveChar={setActiveChar} textSize={textSize}/>}
+    <div className="cib">
+      {displayChar
+        ?<><span className="cib-g">{displayChar.ch}</span><span className="cib-py">{displayChar.py}</span><span className="cib-df">{displayChar.def}</span><span className="cib-pos">{displayChar.pos}</span></>
+        :<span className="cib-empty">{mode==='read'?'Hover or click a character · select text to annotate':mode==='trans'?'Translation mode — edit cells to add translations':'Click a character in the vertical text to highlight in facsimile'}</span>}
+    </div>
+  </div>
+}
+
+/* ── PANE TREE ── */
+function PaneTree({node,ops,...rest}){
+  const cRef=useRef(null);
+  if(node.type==='leaf') return <WorkspacePane pane={node} ops={ops} {...rest}/>;
+  const isH=node.dir==='h';
+  const onDrag=e=>{
+    const r=cRef.current.getBoundingClientRect();
+    ops.startSplitDrag(node.id,node.dir,isH?e.clientX:e.clientY,isH?r.width:r.height,node.sizes);
+    document.body.style.cursor=isH?'col-resize':'row-resize';
+    document.body.style.userSelect='none';
+  };
+  return <div ref={cRef} style={{display:'flex',flexDirection:isH?'row':'column',flex:1,overflow:'hidden',minWidth:0,minHeight:0}}>
+    <div style={{flex:node.sizes[0],overflow:'hidden',display:'flex',flexDirection:'column',minWidth:0,minHeight:0}}>
+      <PaneTree node={node.children[0]} ops={ops} {...rest}/>
+    </div>
+    <div className={isH?'srz-h':'srz-v'} onMouseDown={onDrag}/>
+    <div style={{flex:node.sizes[1],overflow:'hidden',display:'flex',flexDirection:'column',minWidth:0,minHeight:0}}>
+      <PaneTree node={node.children[1]} ops={ops} {...rest}/>
+    </div>
+  </div>
+}
+
+/* ── RIGHT PANEL ── */
+function RightPanel({width,onCollapse,rightTab,setRightTab,selection,setSelection,mode}){
+  const[msgs,setMsgs]=useState(CHAT_INIT);
+  const[inp,setInp]=useState('');
+  const send=()=>{if(!inp.trim())return;setMsgs(m=>[...m,{role:'u',txt:inp},{role:'a',txt:`Analysing "${inp.slice(0,25)}…" via Dharmamitra classical Chinese model.`}]);setInp('')};
+  return <div className="rp" style={{width}}>
+    <div className="ph"><span>TOOLS</span><button className="ph-btn" onClick={onCollapse}>{I.colR()}</button></div>
+    <div className="rt-bar">
+      {[['ann',I.annot(),'Annot.'],['chat',I.chat(),'Chat'],['ai',I.spark(),'AI'],['dh',I.dharma(),'Dharma']].map(([k,ic,lbl])=>
+        <button key={k} className={`rt${rightTab===k?' on':''}`} onClick={()=>setRightTab(k)}>{ic} {lbl}</button>
+      )}
+    </div>
+    {rightTab==='ann'&&(
+      mode==='read'&&selection
+        ?<div style={{flex:1,overflowY:'auto'}}><SelectionPanel selection={selection} setSelection={setSelection}/></div>
+        :<div className="rc">
+          {!selection&&mode==='read'&&<div style={{fontSize:11,color:'var(--t3)',marginBottom:12,padding:'6px 8px',background:'var(--hov)',borderRadius:4}}>Select text in the reader to open the annotation panel.</div>}
+          {ANNOTATIONS.map((a,i)=><div key={i} className="ann">
+            <div className="ann-ch">{a.char}</div><div className="ann-who">{a.who}</div><div className="ann-txt">{a.txt}</div>
+          </div>)}
+        </div>
+    )}
+    {rightTab==='chat'&&<div style={{display:'flex',flexDirection:'column',flex:1,overflow:'hidden'}}>
+      <div className="rc" style={{flex:1}}>{msgs.map((m,i)=><div key={i} className={`cmsg ${m.role}`}><div className="cbub">{m.txt}</div></div>)}</div>
+      <div className="chat-in">
+        <textarea className="chat-input" rows={2} value={inp} onChange={e=>setInp(e.target.value)} placeholder="Ask about the text…"
+          onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}}/>
+        <button className="chat-send" onClick={send}>Send ↵</button>
+      </div>
+    </div>}
+    {rightTab==='ai'&&<div style={{flex:1,overflowY:'auto'}}>
+      <div className="ai-lbl">SOURCE</div>
+      <div style={{fontFamily:'var(--fc)',fontSize:15,lineHeight:2,padding:12,background:'var(--bg-ed)',borderBottom:'1px solid var(--bdr)'}}>子曰：「學而時習之，不亦說乎？</div>
+      <div className="ai-lbl">AI TRANSLATION</div>
+      <div style={{fontSize:12,lineHeight:1.75,color:'var(--t2)',padding:12,fontStyle:'italic'}}>"The Master said: Is it not pleasant to learn and in due time to practice what has been learned?"</div>
+      <div className="ai-lbl">DHARMAMITRA GLOSS</div>
+      <div style={{padding:'8px 12px'}}>
+        {[['學而時習之','Learn and in due time practice — 習 implies repeated physical embodiment'],['不亦說乎','Is it not pleasing? — 說 read yuè (joy), not shuō (speak)']].map(([zh,en],i)=>
+          <div key={i} style={{marginBottom:10,paddingBottom:10,borderBottom:'1px solid var(--bdr-l)'}}>
+            <div style={{fontFamily:'var(--fc)',fontSize:14,color:'var(--t1)',marginBottom:3}}>{zh}</div>
+            <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.6}}>{en}</div>
+          </div>)}
+      </div>
+    </div>}
+    {rightTab==='dh'&&<div className="rc">
+      {DICT_ENTRIES.map((d,i)=><div key={i} style={{padding:'10px 0',borderBottom:'1px solid var(--bdr-l)'}}>
+        <div style={{display:'flex',gap:8,alignItems:'baseline',marginBottom:3}}>
+          <span style={{fontFamily:'var(--fc)',fontSize:15,color:'var(--t1)'}}>{d.cjk}</span>
+          <span style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--amb)'}}>{d.py}</span>
+        </div>
+        <div style={{fontSize:11,color:'var(--t3)',fontStyle:'italic',marginBottom:4}}>Skt. equiv.: śikṣā / vijñāna</div>
+        <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.6}}>{d.def}</div>
+      </div>)}
+    </div>}
+  </div>
+}
+
+/* ── STATUS BAR ── */
+function StatusBar({activeChar,mode,setMode}){
+  const cp=activeChar?'U+'+activeChar.ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0'):'—';
+  return <div className="sb">
+    <div className="si hi">{I.branch()} <span>main</span></div>
+    <div className="s-sep"/>
+    <div className="si"><span style={{color:'var(--grn)',marginRight:2}}>●</span>rev/KRP-2024-1.1</div>
+    <div className="s-sep"/>
+    <div className="si">論語 · 學而篇 · §1.1</div>
+    <div className="s-sep"/>
+    <div className="si">450 chars</div>
+    <div className="s-sp"/>
+    {/* MODE SWITCHER */}
+    <div style={{display:'flex',height:'100%',borderLeft:'1px solid rgba(255,255,255,.15)',borderRight:'1px solid rgba(255,255,255,.15)'}}>
+      {[['read','READ'],['trans','TRANS'],['inspect','INSPECT']].map(([m,l])=>
+        <button key={m} className={`sdb${mode===m?' on':''}`} onClick={()=>setMode(m)} style={{padding:'0 10px',fontSize:10,letterSpacing:'.05em'}}>{l}</button>
+      )}
+    </div>
+    <div className="s-sep"/>
+    <div className="si">{activeChar
+      ?<><span style={{fontFamily:'var(--fc)',fontSize:13,color:'var(--amb)'}}>{activeChar.ch}</span>&nbsp;<span style={{fontFamily:'var(--fm)'}}>{cp}</span></>
+      :<span style={{fontFamily:'var(--fm)'}}>{cp}</span>}
+    </div>
+    <div className="s-sep"/>
+    <div className="si">UTF-8</div>
+  </div>
+}
+
+/* ── TWEAKS ── */
+function Tweaks({open,textSize,setTextSize}){
+  return <div className={`tw-panel${open?' open':''}`}>
+    <div className="tw-ttl">Tweaks</div>
+    <div className="tw-row">
+      <span className="tw-lbl">CJK font size</span>
+      <div style={{display:'flex',alignItems:'center',gap:6}}>
+        <input type="range" className="tw-range" min={13} max={28} value={textSize} onChange={e=>setTextSize(+e.target.value)}/>
+        <span style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--t2)',minWidth:22}}>{textSize}</span>
+      </div>
+    </div>
+  </div>
+}
+
+/* ── APP ── */
+const TWEAK_DEFAULTS=/*EDITMODE-BEGIN*/{
+  "textSize": 17,
+  "showPinyin": false
+}/*EDITMODE-END*/;
+
+function App(){
+  const[leftOpen,setLeftOpen]=useState(true);
+  const[rightOpen,setRightOpen]=useState(true);
+  const[leftW,setLeftW]=useState(260);
+  const[rightW,setRightW]=useState(300);
+  const[activity,setActivity]=useState('texts');
+  const[activeChar,setActiveChar]=useState(null);
+  const[hoverChar,setHoverChar]=useState(null);
+  const[searchQ,setSearchQ]=useState('');
+  const[tweaksOpen,setTweaksOpen]=useState(false);
+  const[textSize,setTextSize]=useState(TWEAK_DEFAULTS.textSize);
+  const[mode,setMode]=useState('read');
+  const[selection,setSelection]=useState(null);
+  const[rightTab,setRightTab]=useState('ann');
+
+  const[paneTree,setPaneTree]=useState(()=>{
+    const t1=uid(),t2=uid(),leaf=uid();
+    return{id:leaf,type:'leaf',tabs:[{id:t1,type:'text',title:'論語 · 學而'},{id:t2,type:'facsimile',title:'Facsimile'}],activeTab:t1};
+  });
+
+  const dragging=useRef(null);
+  const splitDragRef=useRef(null);
+
+  const ops={
+    split:(leafId,dir)=>setPaneTree(t=>splitLeaf(t,leafId,dir)),
+    remove:(leafId)=>setPaneTree(t=>removeLeaf(t,leafId)),
+    addTab:(leafId,tab)=>setPaneTree(t=>treeUpdate(t,leafId,n=>({...n,tabs:[...n.tabs,tab],activeTab:tab.id}))),
+    closeTab:(leafId,tabId)=>setPaneTree(t=>treeUpdate(t,leafId,n=>{const tabs=n.tabs.filter(x=>x.id!==tabId);return{...n,tabs,activeTab:tabs.find(x=>x.id===n.activeTab)?n.activeTab:tabs[tabs.length-1]?.id}})),
+    setActive:(leafId,tabId)=>setPaneTree(t=>treeUpdate(t,leafId,n=>({...n,activeTab:tabId}))),
+    startSplitDrag:(splitId,dir,initMouse,totalSize,initSizes)=>{splitDragRef.current={splitId,dir,initMouse,totalSize,initSizes:[...initSizes]};},
+  };
+
+  useEffect(()=>{
+    const mm=e=>{
+      if(dragging.current==='left') setLeftW(w=>Math.max(160,Math.min(480,w+e.movementX)));
+      if(dragging.current==='right') setRightW(w=>Math.max(200,Math.min(500,w-e.movementX)));
+      if(splitDragRef.current){
+        const{splitId,dir,initMouse,totalSize,initSizes}=splitDragRef.current;
+        const deltaPct=((dir==='h'?e.clientX:e.clientY)-initMouse)/totalSize*100;
+        const newA=Math.max(10,Math.min(90,initSizes[0]+deltaPct));
+        setPaneTree(t=>treeUpdate(t,splitId,n=>({...n,sizes:[newA,100-newA]})));
+      }
+    };
+    const mu=()=>{dragging.current=null;splitDragRef.current=null;document.body.style.cursor='';document.body.style.userSelect=''};
+    window.addEventListener('mousemove',mm);window.addEventListener('mouseup',mu);
+    return()=>{window.removeEventListener('mousemove',mm);window.removeEventListener('mouseup',mu)};
+  },[]);
+
+  useEffect(()=>{
+    const h=e=>{
+      if(e.data?.type==='__activate_edit_mode') setTweaksOpen(true);
+      if(e.data?.type==='__deactivate_edit_mode') setTweaksOpen(false);
+    };
+    window.addEventListener('message',h);
+    window.parent.postMessage({type:'__edit_mode_available'},'*');
+    return()=>window.removeEventListener('message',h);
+  },[]);
+
+  useEffect(()=>{window.parent.postMessage({type:'__edit_mode_set_keys',edits:{textSize}},'*')},[textSize]);
+
+  const handleSetMode=m=>{setMode(m);setSelection(null)};
+  const togActivity=k=>{if(activity===k&&leftOpen)setLeftOpen(false);else{setActivity(k);setLeftOpen(true)}};
+  const multiPane=countLeaves(paneTree)>1;
+  const ACTS=[{k:'texts',lbl:'Texts',icon:s=>I.texts(s)},{k:'catalog',lbl:'Catalog',icon:s=>I.catalog(s)},{k:'concepts',lbl:'Concepts',icon:s=>I.concepts(s)},{k:'dictionary',lbl:'Dict.',icon:s=>I.dictionary(s)}];
+  const common={ops,activeChar,setActiveChar,hoverChar,setHoverChar,textSize,multiPane,mode,selection,setSelection,setRightTab};
+
+  return <div id="app">
+    <div className="mb">
+      <div className="mb-logo"><span className="mb-logo-cjk">漢</span><span className="mb-logo-txt">SinoResearch</span></div>
+      <div className="mb-sep"/>
+      <div style={{display:'flex',gap:1}}>
+        {['Browse','About','Bookmarks','Help'].map(m=><button key={m} className="mb-btn">{m}</button>)}
+      </div>
+      <div className="mb-search">{I.search()} <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Search texts, concepts, persons…"/> <kbd>⌘K</kbd></div>
+      <button className="mb-login">Login</button>
+    </div>
+    <div className="main">
+      <div className="act">
+        {ACTS.map(a=><button key={a.k} className={`act-btn${activity===a.k&&leftOpen?' on':''}`} onClick={()=>togActivity(a.k)} title={a.lbl}>
+          {a.icon(18)}<span className="act-lbl">{a.lbl}</span>
+        </button>)}
+        <div className="act-gap"/>
+      </div>
+      {leftOpen&&<><LeftPanel activity={activity} width={leftW} onCollapse={()=>setLeftOpen(false)}/>
+        <div className="rz" onMouseDown={()=>{dragging.current='left';document.body.style.cursor='col-resize';document.body.style.userSelect='none'}}/></>}
+      <div className="ca">
+        <PaneTree node={paneTree} {...common}/>
+      </div>
+      {rightOpen&&<><div className="rz" onMouseDown={()=>{dragging.current='right';document.body.style.cursor='col-resize';document.body.style.userSelect='none'}}/>
+        <RightPanel width={rightW} onCollapse={()=>setRightOpen(false)} rightTab={rightTab} setRightTab={setRightTab} selection={selection} setSelection={setSelection} mode={mode}/></>}
+      {!leftOpen&&<button onClick={()=>setLeftOpen(true)} style={{position:'absolute',left:52,top:40,zIndex:50,background:'var(--bg-pan)',border:'1px solid var(--bdr)',borderRadius:'0 4px 4px 0',padding:'6px 4px',color:'var(--t2)',cursor:'pointer',display:'flex'}}>{I.chev('r')}</button>}
+      {!rightOpen&&<button onClick={()=>setRightOpen(true)} style={{position:'absolute',right:0,top:40,zIndex:50,background:'var(--bg-pan)',border:'1px solid var(--bdr)',borderRadius:'4px 0 0 4px',padding:'6px 4px',color:'var(--t2)',cursor:'pointer',display:'flex'}}>{I.chev('l')}</button>}
+    </div>
+    <StatusBar activeChar={activeChar} mode={mode} setMode={handleSetMode}/>
+    <Tweaks open={tweaksOpen} textSize={textSize} setTextSize={setTextSize}/>
+  </div>
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
