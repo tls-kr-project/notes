@@ -1,5 +1,10 @@
 # Formats
 
+Structured data, as simple as possible.  We will use a combination of YAML and MD for most aspects. As in @kanripo, the files for one text will be in one repository, a GitHub user account for this purpose has been created: @krp-yaml.
+
+Texts will be split into sections, first along *juan* or similar boundaries found in the source. We might decide to have smaller units reflected in the folder layout. We want to have text, annotations and translations as close together as feasible: either in the same folder, or in a structure that mirrors the text layout elsewhere. 
+
+
 ## Text data
 
  - The format for the text data is YAML. 
