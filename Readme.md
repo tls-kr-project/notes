@@ -30,6 +30,10 @@ The meetings will be used to accompany the development, discuss strategies for r
 
 ## Design 
 
-Some design documents are in 'design'.  Review of the previous projects Kanripo and HXWD are also available.  
-  
+Technical details of the design are in the design folder.  Here are some of the non-technical goals:
+
+- In almost all text genres, a distinction between root text and commentarial voices is essential.  We will try to reflect this in the design from the start.
+- Many texts are intimately related in many different ways.  The data format and interface design will strive to make these connection visible and actionable.
+
+
 
