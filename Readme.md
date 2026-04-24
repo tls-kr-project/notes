@@ -9,7 +9,10 @@ The meeting notes and records will go into 'meetings'
 The planned meetings are announced here. In general, expect meetings on a 2nd and 4th Friday at 5pm JST.
 
  - 2026-04-24  Kickoff meeting for the new project
-   - mockup of new interface https://hxwd.org/seminar/data/Research%20Platform.html
+   - AI punctuation experiments: 
+     - (KRa30013)[https://hxwd.org/seminar/data/compare_KR3a0013_deepseek-openai.html]
+     - (KR5c0098)[https://hxwd.org/seminar/data/compare_KR5c0098_deepseek-openai-gemini.html]
+   - mockup of new interface (SinoResearch)[https://hxwd.org/seminar/data/Research%20Platform.html]
  - 2026-05-08  regular meeting 
  - 2026-05-22  regular meeting 
  - 2026-06-12  regular meeting 
