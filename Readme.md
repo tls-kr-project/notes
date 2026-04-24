@@ -13,6 +13,7 @@ The planned meetings are announced here. In general, expect meetings on a 2nd an
      - [KRa30013 傅子](https://hxwd.org/seminar/data/compare_KR3a0013_deepseek-openai.html)
      - [KR5c0098 道德眞經注䟽](https://hxwd.org/seminar/data/compare_KR5c0098_deepseek-openai-gemini.html)
    - mockup of new interface [SinoResearch](https://hxwd.org/seminar/data/Research%20Platform.html)
+   - [Kanripo Report](http://hdl.handle.net/2433/210140) -- again:-)
  - 2026-05-08  regular meeting 
  - 2026-05-22  regular meeting 
  - 2026-06-12  regular meeting 
