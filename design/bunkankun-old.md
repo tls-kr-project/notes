@@ -33,27 +33,24 @@ The text element of any field is a sequence of characters drawn from a defined *
 The procedure is applied in order:
 
 1. **Source.** Input is treated as Unicode encoded in UTF-8.
-2. **Entity expansion.** Entity references in the source — for example `&KRxxxx;` style references in Kanripo material, or TEI `<g/>` elements — that point to characters not available in current Unicode are expanded to codepoints in the Supplementary Private Use Area (SPUA-A, U+F0000–U+FFFFD) using the bundle's declared **entity encoding** (see Entity encodings, under Reference assets). The expansion is deterministic and produces no markers: the PUA codepoint, taken together with the declared encoding, is sufficient to recover the entity reference. The PUA codepoints produced this way are first-class members of the canonical text stream and participate in offsets, the text hash, and downstream marker logic like any other character.
-3. **Unicode normalization.** NFC is applied so that base characters are in precomposed form.
-4. **Extraction of layout features.** Characters carrying layout, structural, or paratextual information — whitespace, punctuation, indent characters, page and line breaks, register dividers, and similar — are removed from the text element and emitted as markers, each with an offset into the remaining text stream.
-5. **Substitution to canonical characters.** Any character in the post-extraction stream that is not a member of the canonical character set is replaced by its canonical equivalent. Each such substitution is emitted as a marker recording the offset, the character or sequence replaced, and the reason for the substitution.
-6. **Hash.** The resulting text stream, encoded as UTF-8, is the input to the **hash** field that accompanies the text element.
+2. **Unicode normalization.** NFC is applied so that base characters are in precomposed form.
+3. **Extraction of layout features.** Characters carrying layout, structural, or paratextual information — whitespace, punctuation, indent characters, page and line breaks, register dividers, and similar — are removed from the text element and emitted as markers, each with an offset into the remaining text stream.
+4. **Substitution to canonical characters.** Any character in the post-extraction stream that is not a member of the canonical character set is replaced by its canonical equivalent. Each such substitution is emitted as a marker recording the offset, the character or sequence replaced, and the reason for the substitution.
+5. **Hash.** The resulting text stream, encoded as UTF-8, is the input to the **hash** field that accompanies the text element.
 
 **Offsets** count Unicode codepoints into the post-substitution text stream. Variation selectors and similar combining characters are not independent offset targets; they remain attached to the preceding base character.
 
-**Reversibility.** Because every layout feature and every substitution is recorded as a marker, and because entity expansion is reversible through the declared entity encoding, an exact reconstruction of the source can be produced by applying the markers to the canonical text in reverse order and then de-expanding any PUA codepoints assigned by the encoding. The hash audits the canonical form; the markers and the entity encoding together carry the residue that distinguishes one transcription of a source from another.
+**Reversibility.** Because every layout feature and every substitution is recorded as a marker, an exact reconstruction of the source can be produced by applying the markers to the canonical text in reverse order. The hash audits the canonical form; the markers carry the residue that distinguishes one transcription of a source from another.
 
 **Canonicalization is not editorial work.** Variant characters (異体字) that are themselves members of the canonical character set are preserved as written. Replacing a variant with a standard form, or a standard form with a variant, is an editorial decision, not a canonicalization step, and produces a different hash. The canonicalization procedure substitutes only characters that fall outside the canonical set.
 
-**Entity expansion is not substitution.** A substitution replaces a source character with a different character that is itself a member of the canonical character set, and records the replacement as a marker so the source remains reconstructible. Entity expansion produces a PUA codepoint that is a stand-in for a character with no Unicode equivalent — there is no canonical Unicode character to substitute *to*. The PUA codepoint is therefore a member of the canonical text stream in its own right, and reversibility is guaranteed by the entity encoding rather than by markers. Source PUA characters that *do* have a defined canonical-set replacement continue to be handled by `pua-resolution` substitutions and their associated mappings.
-
 ### Reference assets
 
-Several elements of the archival format depend on data that does not belong inside any single juan file but must be referenced from juan files in a stable, auditable way: the **canonical character set** that defines what characters a text element may contain, the **substitution mappings** that drive systematic replacements during canonicalization, the **entity encodings** that assign PUA codepoints to characters absent from current Unicode, and the **witness tables** that resolve citation keys to descriptions of consulted sources.
+Several elements of the archival format depend on data that does not belong inside any single juan file but must be referenced from juan files in a stable, auditable way: the **canonical character set** that defines what characters a text element may contain, the **substitution mappings** that drive systematic replacements during canonicalization, and the **witness tables** that resolve citation keys to descriptions of consulted sources.
 
 These are collectively termed **reference assets**. A reference asset is an addressable bundle asset in its own right, with a canonical identifier, a hash, and a version. Reference assets are immutable per version: any correction or extension produces a new version with a new identifier, leaving juan files canonicalized against the older version unaffected. A bundle that relies on one or more reference assets declares them in its manifest, which pins each by identifier and hash. The same reference asset can be shared across many bundles; this is, in fact, the expected case for the canonical character set.
 
-The four kinds of reference asset currently defined are described in the following subsections. The category is open: future kinds of reference asset can be introduced under the same pattern.
+The three kinds of reference asset currently defined are described in the following subsections. The category is open: future kinds of reference asset can be introduced under the same pattern.
 
 #### The canonical character set
 
@@ -68,8 +65,6 @@ The contents of a version are defined by **inclusion rules** rather than by exha
 - a small number of non-ideographic characters required for legitimate textual content, such as specific repetition marks.
 
 Characters that fall outside the declared set are not forbidden in a source — they are replaced during canonicalization and the replacement is recorded as a substitution marker. Common reasons for exclusion include compatibility characters with a documented preferred form, deprecated codepoints, ad-hoc Private Use Area assignments from third-party encoding schemes, and blocks deliberately not yet supported.
-
-When a bundle declares an **entity encoding**, the PUA codepoints assigned by that encoding are, for the purposes of this rule, treated as members of the canonical character set. They are not "outside" the set and do not produce substitution markers; they are part of the canonical text stream by virtue of the entity-encoding declaration in the manifest. See the section on entity encodings, below.
 
 Successor versions of a canonical set are expected to be **additive**: `bkk-cjk-v2` should be a superset of `bkk-cjk-v1`, except where Unicode itself reclassifies characters. A juan canonicalized against an earlier version is therefore re-canonicalizable against a later one without information loss; re-canonicalization produces a new juan file with new hashes, while the original is preserved unchanged.
 
@@ -89,28 +84,6 @@ A mapping has a defined **scope** — typically a Unicode block, a coherent thir
 A substitution marker that draws on a mapping carries both the mapping's canonical identifier with hash (pinning the version) and the entry identifier within the mapping. This guarantees that the meaning of an individual substitution does not drift even if a later version of the mapping revises the replacement.
 
 A mapping version may declare which canonical character set versions it is valid against, since a mapping that produces replacements in `bkk-cjk-v1` may need to be revised, or extended, before it is valid against `bkk-cjk-v2`.
-
-Substitution mappings handle source PUA characters that have a defined replacement within the canonical character set. They do not handle PUA codepoints produced by entity expansion: those are governed by an **entity encoding** (described in the next subsection) and are members of the canonical text stream rather than substituted-away characters.
-
-#### Entity encodings
-
-An **entity encoding** is a reference asset that assigns Supplementary Private Use Area (SPUA-A, U+F0000–U+FFFFD) codepoints to characters that have no representation in current Unicode but appear in source material as entity references — for example `&KRxxxx;` style references in Kanripo source files, or TEI `<g/>` elements. The encoding is consulted during the **entity expansion** step of canonicalization; the resulting PUA codepoints are first-class members of the canonical text stream.
-
-An entity encoding is structurally parallel to a substitution mapping: distributed through the same substrate-agnostic mechanism, addressable, hashed, and versioned per the reference-asset pattern. Within an encoding each entry carries:
-
-- the **PUA codepoint** assigned to the entity. This is the primary key within the encoding.
-- one or more **source references** that resolve to this codepoint — typically a list of `(namespace, identifier)` pairs, where the namespace identifies the source format (e.g., `kr` for `&KRxxxx;` references, `tei-g` for TEI `<g/>` elements) and the identifier is the entity reference within that namespace. Multiple source references may map to the same codepoint when several source formats describe the same glyph.
-- an optional **external_reference** field pointing to a richer description of the character — typically an entry in a project-maintained or third-party glyph database, where descriptive material such as IDS expressions, glyph images, and rendering hints is held. The encoding deliberately keeps internal metadata slim; rich descriptions are expected to live in the external resource.
-
-The formula by which a particular middleware assigns a PUA codepoint to a given entity reference at import time is **not** part of the format. Different importers, working with different source materials, may legitimately assign different codepoints to the same entity. Once an encoding is declared in a bundle's manifest, however, its assignments are fixed for that bundle: every PUA codepoint produced by entity expansion in any juan of the bundle resolves through that encoding.
-
-A new entity reference encountered during conversion is added in a successor version of the encoding, which is then declared by any bundle that needs the new assignment. Successor versions of an entity encoding are expected to be **additive** in the same sense as the canonical character set: existing assignments are preserved, new ones are appended.
-
-##### Receiver contract
-
-A receiver that encounters PUA codepoints in a bundle whose manifest declares an entity encoding should interpret those codepoints through the declared encoding. Resolution is via the middleware, which fetches the encoding by canonical identifier and hash and exposes lookups from PUA codepoint to source references and external reference.
-
-A receiver may then choose any rendering strategy appropriate to its environment: a glyph from a PUA-aware font (such as HanaMin or a project-specific font), a fetched glyph image referenced from the external description, an IDS-rendered composite, or a typographic placeholder annotated with the entity name. A receiver that does not consult the encoding must at minimum signal to the user that unresolved PUA characters are present, rather than rendering them silently as missing-glyph boxes.
 
 #### Witness tables
 
@@ -178,7 +151,6 @@ A manifest carries the following **required** fields:
 A manifest carries the following **optional** fields, used when applicable:
 
 - **mappings:** substitution mappings used during canonicalization, each with its canonical identifier and hash.
-- **entity_encoding:** the entity encoding used during canonicalization, with its canonical identifier and hash. Required if any juan in the bundle contains entity-derived PUA codepoints; omitted otherwise.
 - **witness_tables:** witness tables used by markers in the bundle, each with its canonical identifier and hash.
 - **table_of_contents:** a structured listing that points into the juan files, used for navigation.
 - **metadata:** descriptive metadata pertaining to the whole text — title, attributions, dates, relationships to other works. Fields here are descriptive rather than structural; consumers should not depend on them for resolution or verification.

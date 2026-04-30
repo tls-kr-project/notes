@@ -1,0 +1,96 @@
+# KR1a0024_001.yaml — 漢上易傳 卷一 / WYG
+#
+# Sample BKK juan file. Shows the structure for the first page (1a) of the
+# source; the rest of the juan is indicated as "...". Hashes are placeholders.
+# See ../bunkankun.md for the format spec.
+
+canonical_identifier: bkk:krp/KR1a0024/wyg/v1/juan/1
+seq: 1
+
+front:
+  opening_line:
+    text: 欽定四庫全書
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  title:
+    text: 漢上易傳
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  juan_number:
+    text: 卷一
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  attribution:
+    - dynasty: 宋
+      name: 朱震
+      role: 撰
+
+body:
+  # Canonical text: continuous codepoint stream, no spaces, no line breaks,
+  # no page breaks, no interlinear notes — all of those are extracted into
+  # markers. Shown here is only the content of page 1a; the real field
+  # continues to the end of the juan as one stream.
+  text: |-
+    ䷀乾元亨利貞乾健也元始也亨通也升降往來周流六虚而不窮者也利者得其宜也貞者正也初九九三九五正也九二九四上九變動亦正也故九二曰龍徳而正中者也乾具此四徳故為諸卦之祖程顥曰一徳不具不足為之乾伏羲初畫八卦乾坤坎離震巽兊艮因…
+  hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+  markers:
+    # --- page 1a ---
+    - type: page-break
+      offset: 0
+      id: "001-1a"
+      edition: WYG
+
+    - type: interlinear-note
+      offset: 1                    # between ䷀ and 乾
+      content: 乾下/乾上
+      note: trigram composition gloss, in small double-column print
+
+    - type: register
+      offset: 1
+      register: classic            # 乾元亨利貞 — 經文
+    - type: line-break
+      offset: 6                    # after 貞
+
+    - type: register
+      offset: 6
+      register: commentary         # indented Zhu Zhen commentary begins
+    - type: line-break
+      offset: 30                   # after 不窮
+    - type: line-break
+      offset: 54                   # after 正也
+    - type: line-break
+      offset: 78                   # after 正中
+    - type: line-break
+      offset: 102                  # after 不具
+
+    # --- page 1b ---
+    - type: page-break
+      offset: 126
+      id: "001-1b"
+      edition: WYG
+    # ... line-breaks, register switches, and further page-breaks continue ...
+
+    # --- example: an entity-derived PUA codepoint, if any ---
+    # Suppose at some offset the WYG source had &KR1234; — after entity
+    # expansion the canonical text contains U+F1234, declared by the bundle's
+    # entity_encoding. No marker is needed for the expansion itself; a
+    # downstream consumer resolves U+F1234 through the entity encoding asset.
+
+    # --- example substitution marker (illustrative) ---
+    # If the source contained a CJK Compatibility Ideograph that was
+    # substituted to its preferred form during canonicalization:
+    - type: substitution
+      offset: 17                   # illustrative
+      original: "傳"               # e.g., U+F92C compatibility form
+      replacement: "傳"            # U+50B3 preferred
+      reason: compatibility-decomposition
+
+back: {}                           # WYG juan 1 has no closing line distinct from the body
+
+metadata:
+  edition: WYG
+  base_edition: SBCK               # carried from source #+PROPERTY: BASEEDITION
+  source:
+    repository: kanripo
+    file: KR1a0024_001.txt
+    date: "2015-08-24"
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000

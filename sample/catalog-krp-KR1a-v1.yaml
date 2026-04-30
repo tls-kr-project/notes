@@ -1,0 +1,98 @@
+# catalog-krp-KR1a-v1.yaml — sample BKK catalog
+#
+# Snapshot catalog of BKK bundles in the Kanripo 經部・易類 (KR1a)
+# category. A static catalog is itself an addressable BKK asset:
+# canonical_identifier, hash, version. When a manifest in scope
+# changes, a new catalog version is published; older catalog versions
+# remain valid as historical snapshots.
+#
+# Each entry references one manifest by identifier and hash, and
+# reproduces that manifest's metadata block so a client can browse the
+# catalog without fetching any of the underlying manifests.
+#
+# A query against this catalog produces a *recipe* whose pins are the
+# matched manifests, each with role `match`. The catalog itself is the
+# index source; the recipe is the response shape — see ../bunkankun.md
+# §"Catalog browsing".
+
+kind: catalog
+canonical_identifier: bkk:catalog/krp/KR1a/v1
+canonical_location: https://kanripo.org/bkk/catalogs/KR1a/v1
+version: 1
+
+description: |
+  Snapshot of BKK bundles in the Kanripo 經部・易類 (KR1a) category
+  currently available through the project's substrates.
+
+# When this snapshot was built. Successor versions
+# (catalog/krp/KR1a/v2, …) capture later snapshots; this version is
+# immutable.
+built_at: "2026-04-30T12:00:00Z"
+
+entries:
+
+  # KR1a0024 漢上易傳, WYG edition — see manifest.yaml
+  - manifest:
+      identifier: bkk:krp/KR1a0024/wyg/v1
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    metadata:
+      title: 漢上易傳
+      alt_titles: [漢上易傳十一卷卦圖三卷叢説一卷]
+      krp_id: KR1a0024
+      krp_category: KR1a
+      authors:
+        - name: 朱震
+          role: 撰
+          dates: { era: 宋, fl: 政和–紹興 }
+      edition: { name: 文淵閣四庫全書本, short: WYG }
+      base_edition: { name: 四部叢刊本, short: SBCK }
+      composition_period: "1116–1134"
+      source: kanripo.org
+
+  # KR1a0024 漢上易傳, SBCK edition (parallel publication of the same text)
+  - manifest:
+      identifier: bkk:krp/KR1a0024/sbck/v1
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    metadata:
+      title: 漢上易傳
+      alt_titles: [漢上易傳十一卷卦圖三卷叢説一卷]
+      krp_id: KR1a0024
+      krp_category: KR1a
+      authors:
+        - name: 朱震
+          role: 撰
+          dates: { era: 宋, fl: 政和–紹興 }
+      edition: { name: 四部叢刊本, short: SBCK }
+      composition_period: "1116–1134"
+      source: kanripo.org
+
+  # Hypothetical sibling — 周易本義, Zhu Xi, included to illustrate
+  # browsing across multiple texts in the same category.
+  - manifest:
+      identifier: bkk:krp/KR1a0036/wyg/v1
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    metadata:
+      title: 周易本義
+      krp_id: KR1a0036
+      krp_category: KR1a
+      authors:
+        - name: 朱熹
+          role: 撰
+          dates: { era: 宋, fl: "1130–1200" }
+      edition: { name: 文淵閣四庫全書本, short: WYG }
+      composition_period: "12th c."
+      source: kanripo.org
+
+# A catalog may reference other catalogs as sub-catalogs to support
+# federation across repositories or sub-categories. Not exercised here;
+# the form would be:
+#
+#   subcatalogs:
+#     - identifier: bkk:catalog/krp/KR1a/translations/v1
+#       hash: sha256:...
+#       description: translations of KR1a texts
+#
+# Sub-catalog references are deferred; a single project starts with one
+# or two well-known catalog identifiers.
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000

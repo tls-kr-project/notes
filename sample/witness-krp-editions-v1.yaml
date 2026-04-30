@@ -1,0 +1,56 @@
+# witness-krp-editions-v1.yaml — witness table for KRP editions, version 1
+#
+# Sample reference asset of kind "witness table". Resolves citation keys
+# used in markers (e.g. on a substitution marker's `witness` field) to
+# fuller descriptions of the consulted source. Where the source is itself
+# an addressable asset, the entry carries its canonical identifier and
+# hash; otherwise the entry is descriptive only.
+#
+# See ../bunkankun.md §"Reference assets / Witness tables".
+
+kind: witness-table
+canonical_identifier: bkk:witness/krp-editions-v1
+version: 1
+status: stable
+
+entries:
+  - key: WYG
+    description: 文淵閣四庫全書本
+    full_description: |
+      The Wenyuan Ge recension of the Siku Quanshu, completed 1782.
+      Used as a primary witness for many KRP texts.
+    type: printed-edition
+    # No addressable identifier: WYG as a whole is not a BKK asset.
+
+  - key: SBCK
+    description: 四部叢刊本
+    full_description: |
+      Sibu Congkan, Shanghai Commercial Press, 1919–1936.
+    type: printed-edition
+
+  - key: CBETA-T-2024
+    description: CBETA Taishō reprint, 2024 release
+    type: digital-edition
+    # Addressable: the CBETA release is itself published as a BKK asset.
+    asset:
+      identifier: bkk:cbeta/T/2024
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+  - key: KR1a0024-SBCK-v1
+    description: BKK bundle of 漢上易傳, SBCK edition
+    type: bkk-bundle
+    asset:
+      identifier: bkk:krp/KR1a0024/sbck/v1
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+  # ... further entries ...
+
+description: |
+  Witness table covering printed and digital editions consulted in the
+  production of KRP-derived BKK bundles. Citation keys used in markers
+  resolve through this table. Entries that refer to other addressable
+  BKK assets carry a canonical identifier and hash; entries that refer
+  to printed sources outside the BKK substrate carry descriptive text
+  only.
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000

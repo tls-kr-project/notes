@@ -1,0 +1,93 @@
+# charset-cjk-v1.yaml — BKK canonical character set, version 1
+#
+# Sample reference asset of kind "canonical character set". Defines what
+# characters are admissible in a text element after canonicalization.
+# A bundle's manifest pins this asset by canonical_identifier and hash.
+#
+# See ../bunkankun.md §"Reference assets / The canonical character set".
+
+kind: canonical-character-set
+canonical_identifier: bkk:charset/cjk-v1
+version: 1
+status: stable                      # stable | draft | deprecated
+
+# Inclusion rules: the set is defined by membership rules, not enumeration.
+# A character is a member iff it matches at least one rule and is not
+# explicitly excluded.
+include:
+  - kind: unicode-block
+    name: CJK Unified Ideographs           # U+4E00–U+9FFF
+  - kind: unicode-block
+    name: CJK Unified Ideographs Extension A   # U+3400–U+4DBF
+  - kind: unicode-block
+    name: CJK Unified Ideographs Extension B   # U+20000–U+2A6DF
+  - kind: unicode-block
+    name: CJK Unified Ideographs Extension C   # U+2A700–U+2B73F
+  - kind: unicode-block
+    name: CJK Unified Ideographs Extension D   # U+2B740–U+2B81F
+  - kind: unicode-block
+    name: CJK Unified Ideographs Extension E   # U+2B820–U+2CEAF
+  - kind: unicode-block
+    name: CJK Unified Ideographs Extension F   # U+2CEB0–U+2EBEF
+  - kind: unicode-block
+    name: Yijing Hexagram Symbols          # U+4DC0–U+4DFF (e.g. ䷀)
+
+  # Variation selectors, attached to a base character (not independent
+  # offset targets).
+  - kind: codepoint-range
+    from: U+FE00
+    to:   U+FE0F
+    note: Variation Selectors 1–16
+  - kind: codepoint-range
+    from: U+E0100
+    to:   U+E01EF
+    note: Variation Selectors 17–256
+
+  # Specific non-ideographic characters required for legitimate textual
+  # content. Listed individually rather than by block.
+  - kind: codepoints
+    items:
+      - { cp: U+3005, note: "々 — ideographic iteration mark" }
+      - { cp: U+3006, note: "〆" }
+      - { cp: U+3007, note: "〇 — ideographic number zero" }
+
+# Explicitly excluded ranges or codepoints. A character matched by include
+# but listed here is NOT a member.
+exclude:
+  - kind: unicode-block
+    name: CJK Compatibility Ideographs         # U+F900–U+FAFF
+    reason: each has a documented preferred form; substitute via mapping
+  - kind: unicode-block
+    name: CJK Compatibility Ideographs Supplement   # U+2F800–U+2FA1F
+    reason: same as above
+  - kind: codepoint-range
+    from: U+E000
+    to:   U+F8FF
+    reason: BMP Private Use Area — resolve via entity-encoding or PUA mapping
+  # Note: SPUA-A (U+F0000–U+FFFFD) is NOT excluded here; whether SPUA-A
+  # codepoints are admitted depends on the bundle's declared entity encoding.
+  # See "entity_set_admission" below.
+
+# Entity-encoding admission rule. When a bundle declares an entity_encoding
+# asset in its manifest, the codepoints listed by that asset are treated
+# as members of this set for that bundle. This is what allows entity
+# expansion to produce canonical text without violating set membership.
+entity_set_admission: declared-by-manifest
+
+# Successor-version policy.
+successor_policy: additive
+# Successor versions of this asset (e.g. cjk-v2) are expected to be
+# supersets of this version, except where Unicode itself reclassifies
+# characters. A juan canonicalized against cjk-v1 is therefore
+# re-canonicalizable against cjk-v2 without information loss.
+
+description: |
+  Canonical character set for premodern Chinese textual content in the
+  Bunkankun project. Covers the CJK Unified Ideographs block and Extensions
+  A–F, with variation selectors attached to base characters, plus a small
+  number of non-ideographic characters required for textual content.
+  Compatibility ideographs and the BMP PUA are explicitly excluded; their
+  source occurrences are handled via substitution mappings or entity
+  encodings declared by the consuming bundle.
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000

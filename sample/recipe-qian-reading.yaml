@@ -1,0 +1,94 @@
+# recipe-qian-reading.yaml — sample BKK recipe
+#
+# A teacher's reading composition for the 乾 hexagram passage of Zhu Zhen's
+# 漢上易傳, juan 1. Pins the base text (narrowed to juan 1), a translation
+# of the underlying 周易 乾 chapter, a glossary of Yi-jing technical terms,
+# and a sibling SBCK edition of 漢上易傳 for cross-reference.
+#
+# Hypothetical canonical identifiers and hashes throughout. See
+# ../bunkankun.md §"Recipe format".
+
+kind: recipe
+canonical_identifier: bkk:recipe/teaching/yi-qian-zhuzhen/v1
+canonical_location: https://example.org/bkk/recipes/yi-qian-zhuzhen/v1
+
+# Description is human-readable metadata; consumers do not depend on it
+# for resolution. The recipe carries no editorial prose beyond this.
+description: |
+  Reading composition for the 乾 hexagram (first of the sixty-four) as
+  treated in Zhu Zhen's 漢上易傳, juan 1. Includes a translation of the
+  base 周易 passages, a glossary of Yi-jing technical vocabulary, and a
+  parallel SBCK edition of the same juan for textual comparison.
+
+pins:
+
+  # --- base text: Zhu Zhen 漢上易傳 WYG, juan 1 only ---
+  - role: base
+    manifest:
+      identifier: bkk:krp/KR1a0024/wyg/v1
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    selection:
+      juan: 1
+    note: |
+      漢上易傳 卷一, the 乾 hexagram. WYG edition.
+
+  # --- parallel edition for textual comparison ---
+  - role: witness
+    manifest:
+      identifier: bkk:krp/KR1a0024/sbck/v1
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    selection:
+      juan: 1
+    note: |
+      SBCK edition of the same juan. Useful for textual comparison; a
+      consumer that fetches both can offer side-by-side reading.
+      Alignment between the two is provided by markers in the SBCK juan
+      that reference offsets in the WYG juan, not by this recipe.
+
+  # --- translation of just the 乾 hexagram passages ---
+  # Selection by marker-id range: only the 經文 portion of the juan that
+  # corresponds to the underlying 周易 text, omitting Zhu Zhen's commentary.
+  - role: translation
+    manifest:
+      identifier: bkk:zhouyi/wilhelm-baynes/v1
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    selection:
+      juan: 1                       # Wilhelm-Baynes juan 1 = 乾
+      from: "qian-1"                # marker ids defined in that bundle
+      to:   "qian-7"
+    note: |
+      Wilhelm-Baynes English translation, 乾 chapter. Bundled separately
+      with its own canonicalization; alignment to the base 周易 lives
+      in that bundle's markers.
+
+  # --- glossary, whole bundle ---
+  - role: glossary
+    manifest:
+      identifier: bkk:glossary/yijing-technical/v2
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    note: |
+      Project glossary covering Yi-jing technical vocabulary
+      (爻, 彖, 象, 變, etc.). No selection — the whole glossary is in scope.
+
+  # --- secondary commentary, narrowed via the table of contents ---
+  - role: commentary
+    manifest:
+      identifier: bkk:krp/KR1a0025/wyg/v1   # hypothetical sibling commentary
+      hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    selection:
+      toc: "qian"                   # resolves through the bundle's TOC
+    note: |
+      A second Song-period commentary on the 乾 hexagram, included for
+      contrast with Zhu Zhen's reading. Selected by TOC entry rather
+      than juan number because this bundle's juan structure differs.
+
+# Recipes can pin other recipes; not exercised in this example, but the
+# form would be:
+#
+#   - role: extends
+#     recipe:
+#       identifier: bkk:recipe/teaching/yi-introduction/v1
+#       hash: sha256:...
+#     note: builds on a colleague's introductory reading list
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000

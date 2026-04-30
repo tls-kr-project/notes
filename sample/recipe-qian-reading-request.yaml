@@ -1,0 +1,69 @@
+# recipe-qian-reading-request.yaml — sample BKK recipe in request form
+#
+# Same composition as recipe-qian-reading.yaml, but as a client would
+# submit it to the middleware. Hashes are omitted, the recipe has no
+# canonical_identifier of its own, and the descriptive notes are
+# stripped to the minimum needed to identify the order.
+#
+# When the middleware receives this recipe it:
+#   1. resolves each canonical identifier to its current version,
+#   2. fetches and verifies each pinned asset,
+#   3. applies any selection,
+#   4. returns the assembled set together with the *resolved* recipe —
+#      i.e. this same recipe with all per-pin hashes filled in and a
+#      top-level recipe hash computed.
+#
+# The client may then discard the resolved recipe, save it as a
+# reproducible record (so the same content can be fetched again
+# byte-for-byte), or pass it on (e.g. attach it to a scholarly article
+# so the reader can replicate the author's citation set).
+#
+# See ../bunkankun.md §"Recipe format / Recipe as request" and
+# §"Recipes for citation".
+
+kind: recipe
+
+# No canonical_identifier: this recipe is not (yet) a published asset.
+# A published or resolved recipe carries one; an ad-hoc request need not.
+
+description: |
+  Reading composition for the 乾 hexagram of 漢上易傳 卷一: base text,
+  parallel SBCK edition, translation, glossary, secondary commentary.
+
+pins:
+
+  # All hashes omitted — middleware resolves to current versions.
+
+  - role: base
+    manifest:
+      identifier: bkk:krp/KR1a0024/wyg/v1
+    selection:
+      juan: 1
+
+  - role: witness
+    manifest:
+      identifier: bkk:krp/KR1a0024/sbck/v1
+    selection:
+      juan: 1
+
+  - role: translation
+    manifest:
+      identifier: bkk:zhouyi/wilhelm-baynes/v1
+    selection:
+      juan: 1
+      from: "qian-1"
+      to:   "qian-7"
+
+  - role: glossary
+    manifest:
+      identifier: bkk:glossary/yijing-technical/v2
+
+  - role: commentary
+    manifest:
+      identifier: bkk:krp/KR1a0025/wyg/v1
+    selection:
+      toc: "qian"
+
+# No top-level hash: the recipe is not yet finalized. The middleware
+# will return a resolved recipe with both per-pin hashes and the
+# recipe's own hash filled in.

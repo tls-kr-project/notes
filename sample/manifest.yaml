@@ -1,0 +1,152 @@
+# manifest.yaml — KR1a0024 漢上易傳 / WYG
+#
+# Sample BKK Bundle manifest. Hashes are placeholders; they would be filled in
+# by the canonicalization pipeline. See ../bunkankun.md for the format spec.
+
+canonical_identifier: bkk:krp/KR1a0024/wyg/v1
+canonical_location: https://kanripo.org/bkk/KR1a0024/wyg/v1
+
+canonical_set:
+  identifier: bkk:charset/cjk-v1
+  hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+# Required because juan files contain &KRxxxx; entities expanded into SPUA-A.
+entity_encoding:
+  identifier: bkk:entities/krp-v1
+  hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+# Substitution mappings consulted during canonicalization, if any.
+mappings:
+  - identifier: bkk:mappings/cjk-compat-v1
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+# Witness tables referenced by markers in the bundle, if any.
+witness_tables:
+  - identifier: bkk:witness/krp-editions-v1
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+juan:
+  - seq: 0
+    filename: KR1a0024_000.yaml
+    title: 提要・原序・表
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 1
+    filename: KR1a0024_001.yaml
+    title: 卷一
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 2
+    filename: KR1a0024_002.yaml
+    title: 卷二
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 3
+    filename: KR1a0024_003.yaml
+    title: 卷三
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 4
+    filename: KR1a0024_004.yaml
+    title: 卷四
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 5
+    filename: KR1a0024_005.yaml
+    title: 卷五
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 6
+    filename: KR1a0024_006.yaml
+    title: 卷六
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 7
+    filename: KR1a0024_007.yaml
+    title: 卷七
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 8
+    filename: KR1a0024_008.yaml
+    title: 卷八
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 9
+    filename: KR1a0024_009.yaml
+    title: 卷九
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 10
+    filename: KR1a0024_010.yaml
+    title: 卷十
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 11
+    filename: KR1a0024_011.yaml
+    title: 卷十一
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 12
+    filename: KR1a0024_012.yaml
+    title: 卦圖卷上
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 13
+    filename: KR1a0024_013.yaml
+    title: 卦圖卷中
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 14
+    filename: KR1a0024_014.yaml
+    title: 卦圖卷下
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - seq: 15
+    filename: KR1a0024_015.yaml
+    title: 叢説
+    hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+table_of_contents:
+  - ref: { juan: 0, marker_id: "000-1a" }
+    title: 漢上易傳 提要
+  - ref: { juan: 0, marker_id: "000-4a" }
+    title: 漢上易傳 原序
+  - ref: { juan: 0, marker_id: "000-8a" }
+    title: 漢上易傳 表
+  - ref: { juan: 1, marker_id: "001-1a" }
+    title: 漢上易傳 卷一
+  - ref: { juan: 2, marker_id: "002-1a" }
+    title: 漢上易傳 卷二
+  - ref: { juan: 3, marker_id: "003-1a" }
+    title: 漢上易傳 卷三
+  - ref: { juan: 4, marker_id: "004-1a" }
+    title: 漢上易傳 卷四
+  - ref: { juan: 5, marker_id: "005-1a" }
+    title: 漢上易傳 卷五
+  - ref: { juan: 6, marker_id: "006-1a" }
+    title: 漢上易傳 卷六
+  - ref: { juan: 7, marker_id: "007-1a" }
+    title: 漢上易傳 卷七
+  - ref: { juan: 8, marker_id: "008-1a" }
+    title: 漢上易傳 卷八
+  - ref: { juan: 9, marker_id: "009-1a" }
+    title: 漢上易傳 卷九
+  - ref: { juan: 10, marker_id: "010-1a" }
+    title: 漢上易傳 卷十
+  - ref: { juan: 11, marker_id: "011-1a" }
+    title: 漢上易傳 卷十一
+  - ref: { juan: 12, marker_id: "012-1a" }
+    title: 漢上易傳 卦圖卷上
+  - ref: { juan: 13, marker_id: "013-1a" }
+    title: 漢上易傳 卦圖卷中
+  - ref: { juan: 14, marker_id: "014-1a" }
+    title: 漢上易傳 卦圖卷下
+  - ref: { juan: 15, marker_id: "015-1a" }
+    title: 漢上易傳 叢説
+
+metadata:
+  title: 漢上易傳
+  alt_titles: [漢上易傳十一卷卦圖三卷叢説一卷]
+  krp_id: KR1a0024
+  krp_category: KR1a              # 經部・易類
+  authors:
+    - name: 朱震
+      role: 撰
+      dates: { era: 宋, fl: 政和–紹興 }
+  edition:
+    name: 文淵閣四庫全書本
+    short: WYG
+  base_edition:
+    name: 四部叢刊本
+    short: SBCK
+  composition_period: "1116–1134"   # 政和丙申–紹興甲寅
+  source: kanripo.org
+
+other_assets: []
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000

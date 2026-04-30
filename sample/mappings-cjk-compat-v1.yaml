@@ -1,0 +1,60 @@
+# mappings-cjk-compat-v1.yaml — substitution mapping for CJK compatibility
+# ideographs, version 1
+#
+# Sample reference asset of kind "substitution mapping". Drives systematic
+# replacement of CJK Compatibility Ideographs by their preferred unified
+# forms during canonicalization. A substitution marker that draws on this
+# mapping carries this asset's identifier+hash plus the entry id, pinning
+# the meaning of the substitution.
+#
+# See ../bunkankun.md §"Reference assets / Substitution mappings".
+
+kind: substitution-mapping
+canonical_identifier: bkk:mappings/cjk-compat-v1
+version: 1
+status: stable
+
+# Scope: which class of source characters this mapping addresses. Used to
+# decide which mapping to consult for a given source character.
+scope:
+  kind: unicode-block
+  blocks:
+    - CJK Compatibility Ideographs                # U+F900–U+FAFF
+    - CJK Compatibility Ideographs Supplement     # U+2F800–U+2FA1F
+
+# Reason this mapping uses when emitting a substitution marker. All entries
+# in this mapping share a single reason; mappings with mixed reasons would
+# be split.
+reason: compatibility-decomposition
+
+# Canonical-set versions this mapping is valid against. Replacements in
+# `entries` must be members of one of these sets (or admissible via the
+# entity-encoding rule).
+valid_against:
+  - bkk:charset/cjk-v1
+
+entries:
+  - id: cc-001
+    source: U+F900            # 豈 (compat)
+    replacement: U+8C48       # 豈 (preferred)
+  - id: cc-002
+    source: U+F92C            # 傳 (compat)
+    replacement: U+50B3       # 傳 (preferred)
+  - id: cc-003
+    source: U+F9D0            # 類 (compat)
+    replacement: U+985E       # 類 (preferred)
+  # ... further entries ...
+
+# Optional notes on individual entries can live alongside via an extended
+# rich table, like the entity encoding's external_reference. Not modelled
+# here; the mapping is straightforward and the Unicode standard is the
+# authoritative source.
+
+description: |
+  Replaces CJK Compatibility Ideographs and CJK Compatibility Ideographs
+  Supplement codepoints by their preferred Unified forms, as documented in
+  the Unicode Standard. Used during canonicalization when the source
+  contains a compatibility codepoint and the canonical character set
+  excludes it.
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000

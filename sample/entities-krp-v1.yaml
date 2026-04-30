@@ -1,0 +1,82 @@
+# entities-krp-v1.yaml — BKK entity encoding, Kanripo flavour, version 1
+#
+# Sample reference asset of kind "entity encoding". Maps entity references
+# from the source (e.g. &KRxxxx; or TEI <g/>) to SPUA-A codepoints, so that
+# canonical text can carry characters not available in current Unicode.
+#
+# Internal table is intentionally slim: each PUA codepoint is the primary
+# key, source references are (namespace, identifier) pairs, and the rich
+# descriptive data (glyph image, IDS decomposition, encoding committee
+# status, etc.) lives in an external resource, pointed to via
+# external_reference.
+#
+# See ../bunkankun.md §"Reference assets / Entity encodings".
+
+kind: entity-encoding
+canonical_identifier: bkk:entities/krp-v1
+version: 1
+status: stable
+
+# Range of SPUA-A codepoints used by this encoding. Entries below must fall
+# within this range. Consumers can use this to know up front which PUA
+# codepoints to expect.
+range:
+  from: U+F0000
+  to:   U+FFFFD
+
+# Source-reference namespaces that this encoding accepts in the input.
+namespaces:
+  - id: kr
+    description: Kanripo &KRxxxx; entity references
+  - id: tei-g
+    description: TEI <g ref="..."/> elements
+
+# External rich table, kept outside this bundle. The internal entries below
+# point into it. The external table is itself addressable and hashed.
+external_reference:
+  identifier: bkk:entities/krp-rich-v1
+  hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  description: |
+    Full descriptive table (glyph images, IDS decompositions, encoding
+    committee status, prospective Unicode allocations, cross-references).
+    Maintained externally so this bundle stays slim and stable.
+
+# Entries. Each entry's primary key is the SPUA-A codepoint. The
+# source references are the things that would appear in a source file
+# and need to be expanded to the codepoint.
+entries:
+  - codepoint: U+F0001
+    sources:
+      - { ns: kr,    id: KR0001 }
+      - { ns: tei-g, id: "#KR0001" }
+    note: example — character not in current Unicode
+
+  - codepoint: U+F0002
+    sources:
+      - { ns: kr,    id: KR0002 }
+      - { ns: tei-g, id: "#KR0002" }
+    note: example — character not in current Unicode
+
+  # ... further entries ...
+
+# Receiver contract.
+#
+# A consumer that encounters a PUA codepoint in canonical text can:
+#
+#   1. Resolve it through this asset to recover the source-side identifier
+#      (e.g. KR0001) and, via external_reference, the rich description.
+#   2. Choose its own rendering strategy: substitute a named glyph, render
+#      an IDS decomposition, fall back to the source identifier as visible
+#      text, or display a placeholder.
+#
+# The encoding is deterministic and reversible: re-encoding the canonical
+# codepoint with this asset produces the same source reference that
+# expanded into it.
+
+description: |
+  Entity encoding used by Kanripo-derived BKK bundles. Expands &KRxxxx;
+  and TEI <g/> references in source files to SPUA-A codepoints during
+  canonicalization. Slim by design: rich descriptive data lives in the
+  external table referenced by external_reference.
+
+hash: sha256:0000000000000000000000000000000000000000000000000000000000000000
